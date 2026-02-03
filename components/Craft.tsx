@@ -16,7 +16,10 @@ const Craft: React.FC = () => {
     restDelta: 0.001
   });
 
-  const yGraphic = useTransform(smoothProgress, [0, 1], [-150, 250]);
+  const isMobile = typeof window !== 'undefined' ? window.innerWidth < 768 : false;
+  const parallaxFactor = isMobile ? 0.4 : 1;
+
+  const yGraphic = useTransform(smoothProgress, [0, 1], [-150 * parallaxFactor, 250 * parallaxFactor]);
   const rotateGraphic = useTransform(smoothProgress, [0, 1], [-25, 45]);
   const scaleGraphic = useTransform(smoothProgress, [0, 0.5, 1], [0.8, 1.2, 0.9]);
   const opacityGraphic = useTransform(smoothProgress, [0, 0.2, 0.8, 1], [0, 0.08, 0.08, 0]);
@@ -59,28 +62,30 @@ const Craft: React.FC = () => {
       className="py-48 px-8 md:px-24 bg-black relative overflow-hidden"
     >
       {/* Grain Texture Overlay */}
-      <div className="absolute inset-0 opacity-[0.02] pointer-events-none z-50 bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')]" />
+      <div className="absolute inset-0 opacity-[0.02] pointer-events-none z-50 bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')] hidden md:block" />
 
       {/* Floating Abstract Element */}
-      <motion.div
-        style={{
-          y: yGraphic,
-          rotate: rotateGraphic,
-          scale: scaleGraphic,
-          opacity: opacityGraphic
-        }}
-        className="absolute top-0 right-[-5%] w-[80%] h-full pointer-events-none z-0 overflow-hidden"
-      >
-        <svg viewBox="0 0 200 200" className="w-full h-full fill-red-900/10 blur-3xl">
-          <path d="M40,-50.7C52.7,-46.3,64.3,-36.8,70.9,-24.5C77.4,-12.3,78.8,2.7,75.4,17.4C72,32,63.7,46.3,51.8,55.5C39.8,64.7,24.1,68.8,9.1,68.9C-5.9,68.9,-20.2,64.8,-32.8,57C-45.3,49.2,-56.1,37.6,-61.8,24C-67.6,10.4,-68.2,-5.1,-63.9,-18.8C-59.6,-32.5,-50.3,-44.5,-38.7,-49.4C-27.1,-54.3,-13.5,-52.1,0.5,-52.8C14.6,-53.6,27.2,-55.1,40,-50.7Z" transform="translate(100 100)" />
-        </svg>
-      </motion.div>
+      {!isMobile && (
+        <motion.div
+          style={{
+            y: yGraphic,
+            rotate: rotateGraphic,
+            scale: scaleGraphic,
+            opacity: opacityGraphic
+          }}
+          className="absolute top-0 right-[-5%] w-[80%] h-full pointer-events-none z-0 overflow-hidden"
+        >
+          <svg viewBox="0 0 200 200" className="w-full h-full fill-red-900/10 blur-3xl">
+            <path d="M40,-50.7C52.7,-46.3,64.3,-36.8,70.9,-24.5C77.4,-12.3,78.8,2.7,75.4,17.4C72,32,63.7,46.3,51.8,55.5C39.8,64.7,24.1,68.8,9.1,68.9C-5.9,68.9,-20.2,64.8,-32.8,57C-45.3,49.2,-56.1,37.6,-61.8,24C-67.6,10.4,-68.2,-5.1,-63.9,-18.8C-59.6,-32.5,-50.3,-44.5,-38.7,-49.4C-27.1,-54.3,-13.5,-52.1,0.5,-52.8C14.6,-53.6,27.2,-55.1,40,-50.7Z" transform="translate(100 100)" />
+          </svg>
+        </motion.div>
+      )}
 
       <div className="max-w-[1400px] mx-auto relative z-10">
         <div className="grid md:grid-cols-12 gap-12 items-center">
           {/* Text Content - Brutalist Positioning */}
           <motion.div
-            style={{ y: useTransform(smoothProgress, [0, 1], [50, -50]) }}
+            style={({ y: useTransform(smoothProgress, [0, 1], [50 * parallaxFactor, -50 * parallaxFactor]), willChange: 'transform' } as any)}
             variants={containerVariants}
             initial="hidden"
             whileInView="visible"
@@ -112,11 +117,12 @@ const Craft: React.FC = () => {
 
           {/* Visual Content - Overlapping & Fragmented */}
           <motion.div
-            style={{
+            style={({
               opacity: useTransform(smoothProgress, [0, 0.4, 0.7], [0, 1, 1]),
               scale: useTransform(smoothProgress, [0, 0.4, 0.7], [0.8, 1.05, 1]),
-              y: useTransform(smoothProgress, [0, 1], [100, -100])
-            }}
+              y: useTransform(smoothProgress, [0, 1], [100 * parallaxFactor, -100 * parallaxFactor]),
+              willChange: 'transform'
+            } as any)}
             className="md:col-span-4 lg:col-span-5 relative"
           >
             <div className="w-full md:w-[85%] aspect-[3/4] md:aspect-[4/5] overflow-hidden group shadow-[0_0_100px_rgba(0,0,0,0.8)] border border-white/5 relative z-10 ml-auto">
@@ -132,14 +138,14 @@ const Craft: React.FC = () => {
 
               {/* Highlight Overlay on Scroll */}
               <motion.div
-                style={{ opacity: useTransform(smoothProgress, [0.3, 0.5, 0.7], [0, 0.3, 0]) }}
+                style={({ opacity: useTransform(smoothProgress, [0.3, 0.5, 0.7], [0, 0.3, 0]) } as any)}
                 className="absolute inset-0 bg-white mix-blend-overlay pointer-events-none"
               />
             </div>
 
             {/* Floating Decal */}
             <motion.div
-              style={{ y: useTransform(smoothProgress, [0, 1], [50, -50]) }}
+              style={({ y: useTransform(smoothProgress, [0, 1], [50 * parallaxFactor, -50 * parallaxFactor]) } as any)}
               className="absolute -bottom-6 -right-6 md:-right-12 bg-red-700 text-white p-8 md:p-12 z-30 hidden md:block"
             >
               <div className="w-8 h-[1px] bg-white mb-4" />

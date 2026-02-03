@@ -56,7 +56,7 @@ const App: React.FC = () => {
       <Footer />
 
       {/* Global Grain Texture - Subtle Layer */}
-      <div className="fixed inset-0 pointer-events-none z-[99] opacity-[0.015] bg-[url('https://www.transparenttextures.com/patterns/60-lines.png')]" />
+      <div className="fixed inset-0 pointer-events-none z-[99] opacity-[0.015] bg-[url('https://www.transparenttextures.com/patterns/60-lines.png')] hidden md:block" />
     </div>
   );
 };

@@ -8,11 +8,14 @@ const Hero: React.FC = () => {
   // Smoother parallax with spring
   const springY = useSpring(scrollY, { stiffness: 100, damping: 30 });
 
-  const yText1 = useTransform(springY, [0, 500], [0, -100]);
-  const yText2 = useTransform(springY, [0, 500], [0, 100]);
-  const yBg = useTransform(springY, [0, 500], [0, 150]);
+  const isMobile = typeof window !== 'undefined' ? window.innerWidth < 768 : false;
+  const parallaxFactor = isMobile ? 0.4 : 1;
+
+  const yText1 = useTransform(springY, [0, 500], [0, -100 * parallaxFactor]);
+  const yText2 = useTransform(springY, [0, 500], [0, 100 * parallaxFactor]);
+  const yBg = useTransform(springY, [0, 500], [0, 150 * parallaxFactor]);
   const opacity = useTransform(springY, [0, 400], [1, 0]);
-  const scale = useTransform(springY, [0, 500], [1, 1.2]);
+  const scale = useTransform(springY, [0, 500], [1, isMobile ? 1.05 : 1.2]);
 
   return (
     <section className="relative h-screen w-full flex items-center overflow-hidden bg-black select-none">
@@ -26,13 +29,13 @@ const Hero: React.FC = () => {
           alt="BISÃO INK em ação"
           width={2000}
           height={1333}
-          style={{ fetchPriority: 'high', objectPosition: '85% center' } as any}
+          style={({ fetchPriority: 'high', objectPosition: '85% center' } as any)}
           className="w-full h-full object-cover grayscale brightness-[0.45] contrast-150"
         />
         {/* Artistic Overlays */}
         <div className="absolute inset-0 bg-gradient-to-b from-black via-transparent to-black" />
-        <div className="absolute inset-0 bg-black/40 mix-blend-multiply" />
-        <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/60-lines.png')]" />
+        <div className="absolute inset-0 bg-black/40 mix-blend-multiply hidden md:block" />
+        <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/60-lines.png')] hidden md:block" />
       </motion.div>
 
       {/* Massive Brutalist Typography - Asymmetric */}
@@ -51,7 +54,7 @@ const Hero: React.FC = () => {
 
         <div className="relative">
           <motion.h1
-            style={{ y: yText1 }}
+            style={{ y: yText1, willChange: 'transform' } as any}
             initial={{ opacity: 0, y: 100, rotate: -2 }}
             animate={{ opacity: 1, y: 0, rotate: 0 }}
             transition={{ duration: 1.2, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
@@ -61,7 +64,7 @@ const Hero: React.FC = () => {
           </motion.h1>
 
           <motion.h1
-            style={{ y: yText2 }}
+            style={{ y: yText2, willChange: 'transform' } as any}
             initial={{ opacity: 0, x: 200 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 1.5, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
