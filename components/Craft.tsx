@@ -115,7 +115,7 @@ const Craft: React.FC = () => {
             </div>
           </motion.div>
 
-          {/* Visual Content - Overlapping & Fragmented */}
+          {/* Visual Content - Overlapping & Fragmented with Katana Slash */}
           <motion.div
             style={({
               opacity: useTransform(smoothProgress, [0, 0.4, 0.7], [0, 1, 1]),
@@ -123,30 +123,73 @@ const Craft: React.FC = () => {
               y: useTransform(smoothProgress, [0, 1], [100 * parallaxFactor, -100 * parallaxFactor]),
               willChange: 'transform'
             } as any)}
-            className="md:col-span-4 lg:col-span-5 relative"
+            className="md:col-span-4 lg:col-span-5 relative group"
           >
-            <div className="w-full md:w-[85%] aspect-[3/4] md:aspect-[4/5] overflow-hidden group shadow-[0_0_100px_rgba(0,0,0,0.8)] border border-white/5 relative z-10 ml-auto">
-              <img
-                src="/assets/monkey_king.jpg"
-                alt="Wukong Tattoo Masterpiece"
-                width={1400}
-                height={1750}
-                loading="lazy"
-                className="w-full h-full object-cover grayscale contrast-[1.2] transition-transform duration-[2000ms] group-hover:scale-110"
+            <div className="relative w-full md:w-[85%] aspect-[3/4] md:aspect-[4/5] ml-auto">
+              {/* Top Slice */}
+              <motion.div
+                style={({
+                  x: useTransform(smoothProgress, [0.4, 0.7], [0, -15 * parallaxFactor]),
+                  y: useTransform(smoothProgress, [0.4, 0.7], [0, -10 * parallaxFactor]),
+                  clipPath: "polygon(0 0, 100% 0, 100% 45%, 0 55%)",
+                  willChange: 'transform'
+                } as any)}
+                className="absolute inset-0 z-20 overflow-hidden shadow-[0_0_100px_rgba(0,0,0,0.8)] border border-white/5"
+              >
+                <img
+                  src="/assets/monkey_king.jpg"
+                  alt="Wukong Tattoo Masterpiece Top"
+                  width={1400}
+                  height={1750}
+                  loading="lazy"
+                  className="w-full h-full object-cover grayscale contrast-[1.2] transition-transform duration-[2000ms] group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-tr from-black/80 via-transparent to-transparent opacity-60" />
+              </motion.div>
+
+              {/* Bottom Slice */}
+              <motion.div
+                style={({
+                  x: useTransform(smoothProgress, [0.4, 0.7], [0, 15 * parallaxFactor]),
+                  y: useTransform(smoothProgress, [0.4, 0.7], [0, 10 * parallaxFactor]),
+                  clipPath: "polygon(0 55.5%, 100% 45.5%, 100% 100%, 0 100%)",
+                  willChange: 'transform'
+                } as any)}
+                className="absolute inset-0 z-10 overflow-hidden shadow-[0_0_100px_rgba(0,0,0,0.8)] border border-white/5"
+              >
+                <img
+                  src="/assets/monkey_king.jpg"
+                  alt="Wukong Tattoo Masterpiece Bottom"
+                  width={1400}
+                  height={1750}
+                  loading="lazy"
+                  className="w-full h-full object-cover grayscale contrast-[1.2] transition-transform duration-[2000ms] group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-tr from-black/80 via-transparent to-transparent opacity-60" />
+              </motion.div>
+
+              {/* Katana Slash Light / Fenda */}
+              <motion.div
+                style={({
+                  opacity: useTransform(smoothProgress, [0.4, 0.5, 0.7], [0, 1, 0.2]),
+                  scaleX: useTransform(smoothProgress, [0.4, 0.7], [0, 1.2]),
+                  rotate: -6,
+                  willChange: 'opacity, transform'
+                } as any)}
+                className="absolute top-[50%] left-[-10%] w-[120%] h-[2px] bg-red-600 z-[25] shadow-[0_0_20px_rgba(220,38,38,0.8)] blur-[1px]"
               />
-              <div className="absolute inset-0 bg-gradient-to-tr from-black/80 via-transparent to-transparent opacity-60" />
 
               {/* Highlight Overlay on Scroll */}
               <motion.div
                 style={({ opacity: useTransform(smoothProgress, [0.3, 0.5, 0.7], [0, 0.3, 0]) } as any)}
-                className="absolute inset-0 bg-white mix-blend-overlay pointer-events-none"
+                className="absolute inset-0 bg-white mix-blend-overlay pointer-events-none z-30"
               />
             </div>
 
             {/* Floating Decal */}
             <motion.div
               style={({ y: useTransform(smoothProgress, [0, 1], [50 * parallaxFactor, -50 * parallaxFactor]) } as any)}
-              className="absolute -bottom-6 -right-6 md:-right-12 bg-red-700 text-white p-8 md:p-12 z-30 hidden md:block"
+              className="absolute -bottom-6 -right-6 md:-right-12 bg-red-700 text-white p-8 md:p-12 z-40 hidden md:block"
             >
               <div className="w-8 h-[1px] bg-white mb-4" />
               <p className="font-logo text-[8px] tracking-[0.4em] uppercase leading-loose">
