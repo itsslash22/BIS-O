@@ -29,7 +29,7 @@ const Hero: React.FC = () => {
           alt="BISÃO INK em ação"
           width={2000}
           height={1333}
-          style={({ fetchPriority: 'high', objectPosition: '85% center' } as any)}
+          style={({ fetchPriority: 'high', objectPosition: isMobile ? 'center' : '95% center' } as any)}
           className="w-full h-full object-cover grayscale brightness-[0.45] contrast-150"
         />
         {/* Artistic Overlays */}
