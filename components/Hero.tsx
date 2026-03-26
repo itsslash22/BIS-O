@@ -56,7 +56,7 @@ const Hero: React.FC = () => {
           initial={{ opacity: 0, x: -100 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-          className="mb-8 relative z-30"
+          className="mb-8 relative z-30 hidden md:block"
         >
           <span className="text-red-600 text-[10px] md:text-xs uppercase font-bold tracking-[1.5em] block mb-4 mix-blend-difference">
             Mãos que desenham destinos
@@ -70,7 +70,7 @@ const Hero: React.FC = () => {
             initial={{ opacity: 0, y: 100, rotate: -2 }}
             animate={{ opacity: 1, y: 0, rotate: 0 }}
             transition={{ duration: 1.2, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-            className="font-logo text-[18vw] md:text-[14vw] leading-[0.7] font-black tracking-[-0.05em] text-white uppercase mix-blend-difference"
+            className="font-logo text-[18vw] md:text-[14vw] leading-[0.7] font-black tracking-[-0.05em] text-white uppercase mix-blend-difference hidden md:block"
           >
             BISÃO
           </motion.h1>
@@ -80,7 +80,7 @@ const Hero: React.FC = () => {
             initial={{ opacity: 0, x: 200 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 1.5, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
-            className="font-logo text-[18vw] md:text-[14vw] leading-[0.7] font-black tracking-[-0.05em] text-red-700 uppercase md:ml-[10vw] -mt-[2vw] opacity-80"
+            className="font-logo text-[18vw] md:text-[14vw] leading-[0.7] font-black tracking-[-0.05em] text-red-700 uppercase md:ml-[10vw] -mt-[2vw] opacity-80 hidden md:block"
           >
             INK
           </motion.h1>
@@ -90,7 +90,7 @@ const Hero: React.FC = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1, delay: 1.8 }}
-          className="mt-16 max-w-lg"
+          className="mt-16 max-w-lg hidden md:block"
         >
           <p className="text-sm md:text-base tracking-[0.2em] uppercase font-light text-gray-400 leading-relaxed text-wrap-balance">
             Únicas e exclusivas. <span className="text-white font-medium">Nada de cópias.</span> A arte que nasce aqui, morre com você.
@@ -99,7 +99,7 @@ const Hero: React.FC = () => {
       </div>
 
       {/* Luxury Detail Elements */}
-      <div className="absolute top-0 left-0 w-full h-full border-[10px] md:border-[30px] border-black pointer-events-none z-20" />
+      <div className="absolute top-0 left-0 w-full h-full border-0 md:border-[30px] border-black pointer-events-none z-20" />
 
       {/* Scroll Indicator - Minimalist */}
       <motion.div

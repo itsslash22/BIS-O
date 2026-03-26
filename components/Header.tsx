@@ -19,9 +19,9 @@ const Header: React.FC = () => {
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="font-logo text-xl md:text-2xl tracking-[0.4em] font-bold text-white"
+          className="font-logo text-xl md:text-2xl tracking-[0.4em] font-bold"
         >
-          BISÃO INK
+          <span className="text-white">BISÃO</span> <span className="text-red-700">INK</span>
         </motion.div>
 
         <div className="hidden md:flex gap-12 text-[10px] tracking-[0.5em] uppercase font-bold text-white/70">
