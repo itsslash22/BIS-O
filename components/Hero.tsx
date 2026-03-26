@@ -30,6 +30,8 @@ const Hero: React.FC = () => {
           muted
           loop
           playsInline
+          preload="auto"
+          poster="/assets/artist_pro.jpg"
           className="absolute inset-0 w-full h-full object-cover grayscale brightness-[0.45] contrast-150 md:hidden z-10"
         >
           <source src="/assets/hero_mobile.mp4" type="video/mp4" />
