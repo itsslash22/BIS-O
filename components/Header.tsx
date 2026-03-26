@@ -58,7 +58,7 @@ const Header: React.FC = () => {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: '100%' }}
             transition={{ type: 'spring', damping: 30, stiffness: 200 }}
-            className="fixed inset-0 z-[60] bg-black p-12 flex flex-col justify-center"
+            className="fixed inset-0 z-[60] bg-black/40 backdrop-blur-xl p-12 flex flex-col justify-center"
           >
             {/* Grain Texture in Menu */}
             <div className="absolute inset-0 opacity-[0.05] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/micro-carbon.png')]" />

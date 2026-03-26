@@ -51,12 +51,12 @@ const Hero: React.FC = () => {
       </motion.div>
 
       {/* Massive Brutalist Typography - Asymmetric */}
-      <div className="relative z-20 w-full px-8 md:px-24 flex flex-col items-start justify-center h-full">
+      <div className="relative z-20 w-full px-8 md:px-24 flex flex-col items-start justify-between md:justify-center h-full py-20 md:py-0">
         <motion.div
           initial={{ opacity: 0, x: -100 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-          className="mb-8 relative z-30 hidden md:block"
+          className="mb-8 relative z-30"
         >
           <span className="text-red-600 text-[10px] md:text-xs uppercase font-bold tracking-[1.5em] block mb-4 mix-blend-difference">
             Mãos que desenham destinos
@@ -90,7 +90,7 @@ const Hero: React.FC = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1, delay: 1.8 }}
-          className="mt-16 max-w-lg hidden md:block"
+          className="max-w-lg md:mt-16"
         >
           <p className="text-sm md:text-base tracking-[0.2em] uppercase font-light text-gray-400 leading-relaxed text-wrap-balance">
             Únicas e exclusivas. <span className="text-white font-medium">Nada de cópias.</span> A arte que nasce aqui, morre com você.
