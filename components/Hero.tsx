@@ -24,6 +24,18 @@ const Hero: React.FC = () => {
         style={{ y: yBg, opacity, scale }}
         className="absolute inset-0 z-0"
       >
+        {/* Mobile Video Background */}
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover grayscale brightness-[0.45] contrast-150 md:hidden z-10"
+        >
+          <source src="/assets/hero_mobile.mp4" type="video/mp4" />
+        </video>
+
+        {/* Fallback & Desktop Image */}
         <img
           src="/assets/artist_pro.jpg"
           alt="BISÃO INK em ação"
