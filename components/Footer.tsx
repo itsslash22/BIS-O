@@ -19,7 +19,7 @@ const Footer: React.FC = () => {
           <div className="space-y-6">
             <span className="text-red-700 text-[9px] tracking-[0.4em] uppercase font-black block">Conectar</span>
             <div className="flex gap-8">
-              <a href="#" className="text-white hover:text-red-700 transition-colors duration-500" aria-label="Instagram"><Instagram size={24} /></a>
+              <a href="https://www.instagram.com/bisaoink/" target="_blank" rel="noopener noreferrer" className="text-white hover:text-red-700 transition-colors duration-500" aria-label="Instagram"><Instagram size={24} /></a>
               <a href="#" className="text-white hover:text-red-700 transition-colors duration-500" aria-label="E-mail"><Mail size={24} /></a>
             </div>
           </div>

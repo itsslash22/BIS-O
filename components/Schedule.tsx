@@ -2,7 +2,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { SCHEDULE_DATA } from '../constants';
-import { Calendar, ArrowRight } from 'lucide-react';
+import { Calendar, ArrowRight, MapPin } from 'lucide-react';
+import { LocationMap } from './ui/expand-map';
 
 const Schedule: React.FC = () => {
   return (
@@ -10,62 +11,73 @@ const Schedule: React.FC = () => {
       {/* Background Graphic */}
       <div className="absolute top-0 right-0 w-1/2 h-full bg-red-900/5 blur-[120px] pointer-events-none" />
 
-      <div className="max-w-6xl mx-auto relative z-10">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-32 gap-8">
-          <div>
-            <span className="text-red-700 text-[10px] tracking-[0.5em] uppercase mb-4 block font-bold">Disponibilidade</span>
-            <h2 className="font-display text-7xl md:text-9xl text-white italic leading-none tracking-tighter">Agenda</h2>
-          </div>
-          <div className="text-right text-gray-600 text-[10px] tracking-[0.4em] flex items-center gap-6 font-bold">
-            <div className="w-12 h-[1px] bg-red-900" />
-            <span>SESSÕES 2026</span>
-          </div>
-        </div>
+      <div className="max-w-7xl mx-auto relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-24 items-start">
+          
+          {/* Left Side: Agenda & Booking */}
+          <div className="lg:col-span-7 flex flex-col justify-center min-h-[400px]">
+            <div className="mb-12">
+              <span className="text-red-700 text-[10px] tracking-[0.5em] uppercase mb-4 block font-bold">Exclusividade</span>
+              <h2 className="font-display text-7xl md:text-8xl text-white italic leading-[0.85] tracking-tighter text-balance">
+                Inicie seu <br /> <span className="text-red-700">Ritual Privado</span>
+              </h2>
+            </div>
 
-        <div className="space-y-0 divide-y divide-white/5">
-          {SCHEDULE_DATA.map((event, idx) => (
-            <motion.div
-              key={idx}
-              initial={{ opacity: 0, x: -50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: idx * 0.15, duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-              className="py-16 md:py-20 flex flex-col md:flex-row justify-between items-center group cursor-pointer hover:bg-white/[0.01] transition-all duration-700 px-8"
+            <p className="text-gray-400 text-lg md:text-xl leading-relaxed max-w-md mb-16 tracking-tight">
+              Cada obra é única. Entre em contato para uma consultoria exclusiva e reserve seu lugar na nossa agenda de 2026.
+            </p>
+
+            <motion.a 
+              href="https://l.instagram.com/?u=https%3A%2F%2Fapi.whatsapp.com%2Fsend%3Fphone%3D5591993171598%26text%3DOl%25C3%25A1%2Btudo%2Bbem%253F%2521%2BGostaria%2Bde%2Bfazer%2Bum%2Bor%25C3%25A7amento%2B%26utm_source%3Dig%26utm_medium%3Dsocial%26utm_content%3Dlink_in_bio%26fbclid%3DPAZXh0bgNhZW0CMTEAc3J0YwZhcHBfaWQMMjU2MjgxMDQwNTU4AAGnupCyT1K3v5hT2Fh_WB97saQqXgXJV_O3sfjVgHlwSJxutaihFmiI-GIVBc0_aem_ztZ5im5rcZzf8DY3Cb96bQ&e=AT7h8KJTNVVKsJoHtQWWkkkGJNbQO3FVYzOAHwWfsBCUBku594X5KOBS5H4_gHuXPACqvfAVNLfhTWmKGGfq7OaQt63s2miDc184LRh_NA"
+              target="_blank"
+              rel="noopener noreferrer"
+              whileHover={{ scale: 1.05, backgroundColor: "rgba(185, 28, 28, 0.2)" }}
+              whileTap={{ scale: 0.95 }}
+              className="relative group flex items-center justify-between gap-8 bg-white/5 backdrop-blur-xl border border-white/10 text-white px-10 py-6 rounded-full text-[11px] tracking-[0.5em] uppercase font-black transition-all shadow-[0_20px_50px_rgba(0,0,0,0.3)] w-fit"
             >
-              <div className="flex flex-col md:flex-row gap-12 md:gap-24 items-center w-full md:w-auto">
-                <div className="text-red-700 font-logo text-xs tracking-widest border border-red-900/30 px-4 py-2">
-                  {event.time}
-                </div>
-                <div className="text-center md:text-left">
-                  <h3 className="text-4xl md:text-5xl font-display italic text-white group-hover:text-red-700 transition-colors duration-500 tracking-tight">
-                    {event.title}
-                  </h3>
-                  <p className="text-gray-500 text-[10px] tracking-[0.3em] mt-3 uppercase font-bold">
-                    {event.description}
-                  </p>
-                </div>
+              <span className="relative z-10 flex items-center gap-6">
+                Solicitar Orçamento <Calendar size={18} className="text-red-700" />
+              </span>
+              <div className="w-10 h-10 rounded-full bg-red-700 flex items-center justify-center group-hover:bg-white transition-colors duration-500">
+                <ArrowRight size={16} className="text-white group-hover:text-red-700" />
               </div>
+            </motion.a>
+          </div>
 
-              <div className="flex items-center gap-16 mt-12 md:mt-0">
-                <span className="text-xs font-bold tracking-[0.4em] text-gray-400 font-logo">{event.date}</span>
-                <motion.div
-                  whileHover={{ x: 10, backgroundColor: '#b91c1c' }}
-                  className="w-14 h-14 border border-white/10 flex items-center justify-center rounded-full transition-all duration-500"
-                >
-                  <ArrowRight size={20} className="text-white" />
-                </motion.div>
+          {/* Right Side: Location & Map */}
+          <div className="lg:col-span-5 flex flex-col items-center lg:items-end gap-12 lg:pt-32">
+            <div className="text-right hidden lg:block">
+              <span className="text-red-700 text-[10px] tracking-[0.5em] uppercase mb-4 block font-bold italic">O Santuário</span>
+              <p className="text-white font-logo text-sm tracking-[0.3em] uppercase leading-relaxed">
+                R. 28 de Setembro, 600 <br /> 
+                Reduto, Belém - PA
+              </p>
+              <p className="text-gray-500 text-[10px] tracking-[0.2em] mt-4 uppercase">
+                CEP 66053-355
+              </p>
+            </div>
+
+            <div className="relative group">
+              {/* Decorative border behind map */}
+              <div className="absolute -inset-4 border border-red-900/20 rounded-3xl group-hover:border-red-700/40 transition-colors duration-700 -z-10" />
+              
+              <LocationMap 
+                location="Cromia Tattoo Studio" 
+                coordinates="1.4507° S, 48.4902° W" 
+              />
+            </div>
+
+            <div className="flex flex-col items-center lg:items-end gap-4">
+              <div className="flex items-center gap-3 text-red-700">
+                <MapPin size={14} />
+                <span className="text-[10px] tracking-[0.4em] uppercase font-bold">Localização Privilegiada</span>
               </div>
-            </motion.div>
-          ))}
-        </div>
+              <p className="text-gray-500 text-[10px] tracking-[0.2em] uppercase text-center lg:text-right max-w-xs leading-loose">
+                Atendimento exclusivo com hora marcada em ambiente privativo no coração do Reduto.
+              </p>
+            </div>
+          </div>
 
-        <div className="mt-32 flex justify-center">
-          <button className="relative group overflow-hidden bg-red-700 text-white px-16 py-8 text-[10px] tracking-[0.6em] uppercase font-black transition-all shadow-[0_0_50px_rgba(185,28,28,0.2)]">
-            <span className="relative z-10 flex items-center gap-6">
-              Agendar Consultoria <Calendar size={18} />
-            </span>
-            <div className="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-500 mix-blend-difference" />
-          </button>
         </div>
       </div>
     </section>

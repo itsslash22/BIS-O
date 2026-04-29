@@ -37,9 +37,9 @@ body {
   color: white;
 }
 
-/* Smooth Scroll */
+/* Custom Smooth Scroll Handled via JS */
 html {
-  scroll-behavior: smooth;
+  scroll-behavior: auto;
 }
 
 /* Scrollbar */
