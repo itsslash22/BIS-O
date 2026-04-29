@@ -7,7 +7,7 @@ const Header: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const WHATSAPP_LINK = "https://l.instagram.com/?u=https%3A%2F%2Fapi.whatsapp.com%2Fsend%3Fphone%3D5591993171598%26text%3DOl%25C3%25A1%2Btudo%2Bbem%253F%2521%2BGostaria%2Bde%2Bfazer%2Bum%2Bor%25C3%25A7amento%2B%26utm_source%3Dig%26utm_medium%3Dsocial%26utm_content%3Dlink_in_bio%26fbclid%3DPAZXh0bgNhZW0CMTEAc3J0YwZhcHBfaWQMMjU2MjgxMDQwNTU4AAGnupCyT1K3v5hT2Fh_WB97saQqXgXJV_O3sfjVgHlwSJxutaihFmiI-GIVBc0_aem_ztZ5im5rcZzf8DY3Cb96bQ&e=AT7h8KJTNVVKsJoHtQWWkkkGJNbQO3FVYzOAHwWfsBCUBku594X5KOBS5H4_gHuXPACqvfAVNLfhTWmKGGfq7OaQt63s2miDc184LRh_NA";
+  const WHATSAPP_LINK = "https://api.whatsapp.com/send?phone=5591993171598&text=Ol%C3%A1+tudo+bem%3F%21+Gostaria+de+fazer+um+or%C3%A7amento+&utm_source=ig&utm_medium=social&utm_content=link_in_bio&fbclid=PAZXh0bgNhZW0CMTEAc3J0YwZhcHBfaWQMMjU2MjgxMDQwNTU4AAGn1cbH6OOuROqQkC4OvKZU0Dla78wuDv355lkhq-onq7PSSp7dsCHyCqA6bNE_aem_7H6qt7agrbuW_JQ3Dnnpgg";
 
   useEffect(() => {
     const handleScroll = () => {
@@ -55,7 +55,6 @@ const Header: React.FC = () => {
     { name: 'Galeria', href: '#gallery' },
     { name: 'Filosofia', href: '#craft' },
     { name: 'O Ritual', href: '#ritual' },
-    { name: 'Agenda', href: '#schedule' },
   ];
 
   return (
