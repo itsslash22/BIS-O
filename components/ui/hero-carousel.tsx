@@ -24,8 +24,15 @@ export interface HeroCarouselItem {
   id?: string | number
   /** Headline for the active slide. Newlines become separate reveal lines. */
   title: string
-  /** Image URL, used both in the card and as the graded background. */
+  /** Full-size image. Used in the lightbox, where detail is the point. */
   image: string
+  /**
+   * Small version of the same image for the strip and the background. A card
+   * ~200px wide handed a 1122px file still decodes the whole thing: fourteen
+   * of those is tens of megabytes of bitmap the compositor has to carry on
+   * every frame of the drag. Falls back to `image`. @default undefined
+   */
+  thumb?: string
   /** Byline printed beside the headline, e.g. "BY AURELIA STUDIO." @default undefined */
   credit?: string
   /** Right-aligned facts, e.g. ["SAT NOV 15", "5-10 PM", "MIAMI"]. @default undefined */
@@ -135,6 +142,15 @@ const RAIL = 0.2 // progress rail width ÷ stage width
 /** Wheel distance that commits to a step, and the lockout after one. */
 const WHEEL_THRESHOLD = 60
 const WHEEL_COOLDOWN = 420
+
+/**
+ * Drag in the lightbox that commits to a step: either a long enough pull, or
+ * a flick. The flick still has to cover SWIPE_MIN, otherwise a tap with a
+ * twitch in it registers as a swipe and the piece changes under the thumb.
+ */
+const SWIPE_DISTANCE = 60
+const SWIPE_VELOCITY = 350
+const SWIPE_MIN = 20
 
 /* Film grain, as a self-contained SVG so the component carries no assets. */
 const GRAIN =
@@ -364,7 +380,9 @@ export function HeroCarousel({
           transition={swing}
         >
           <motion.img
-            src={active.image}
+            // O fundo fica atrás de um véu pesado, um degradê e o grão: a
+            // versão pequena esticada é indistinguível da grande aqui.
+            src={active.thumb ?? active.image}
             alt=""
             aria-hidden
             draggable={false}
@@ -589,7 +607,7 @@ export function HeroCarousel({
                   so object-position only picks which band of the image the
                   half-height neighbours keep. */}
               <img
-                src={item.image}
+                src={item.thumb ?? item.image}
                 alt=""
                 draggable={false}
                 // Só as primeiras entram no carregamento inicial; o resto da
@@ -728,15 +746,37 @@ export function HeroCarousel({
               </button>
             ) : null}
 
+            {/*
+              Arrastar para o lado troca de peça. As setas existem e funcionam
+              no celular, mas ninguém procura por um botão de 44px na borda da
+              tela quando a mão já está sobre a imagem.
+              `dragConstraints` zerado deixa o gesto elástico e devolve a
+              imagem ao lugar quando o arrasto é curto demais para valer.
+            */}
             <motion.img
               key={active.image}
               src={active.image}
               alt={active.title.replace(/\n/g, " ")}
               draggable={false}
+              drag={items.length > 1 ? "x" : false}
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={0.25}
+              dragMomentum={false}
+              onDragEnd={(_, info) => {
+                // Um empurrão rápido conta sem percorrer a distância cheia,
+                // desde que tenha percorrido alguma.
+                const distance = Math.abs(info.offset.x)
+                const speed = Math.abs(info.velocity.x)
+                const decisive =
+                  distance > SWIPE_DISTANCE ||
+                  (speed > SWIPE_VELOCITY && distance > SWIPE_MIN)
+                if (!decisive) return
+                go(info.offset.x < 0 ? index + 1 : index - 1)
+              }}
               initial={reduced ? false : { opacity: 0, scale: 0.97 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={reduced ? { duration: 0 } : { duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-              className="relative max-h-full max-w-full object-contain"
+              className="relative max-h-full max-w-full cursor-grab object-contain active:cursor-grabbing"
             />
 
             {items.length > 1 ? (
