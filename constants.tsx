@@ -81,28 +81,17 @@ export const COLORS = {
 };
 
 /**
- * TODO: trocar os itens marcados como `placeholder` por fotos reais do
- * trabalho do Bisão em /public/assets. Foto de banco de imagem em portfólio
- * de tatuador derruba a credibilidade da página inteira.
+ * Só trabalho real, em /public/assets. Aqui havia mais duas entradas com foto
+ * de banco de imagem — uma delas o Unsplash passou a servir como retrato de
+ * mãe e bebê, rotulado "Fine Line" no meio do portfólio. Depender de URL de
+ * terceiro para o acervo do artista é frágil desse jeito.
+ *
+ * TODO: o Bisão tem muito mais tatuagem para mostrar aqui. Pedir as fotos.
  */
 export const PORTFOLIO_DATA: PortfolioItem[] = [
   { id: '1', title: 'Rei Macaco', category: 'Blackwork', image: '/assets/monkey_king.jpg' },
   { id: '2', title: 'Espírito do Tigre', category: 'Blackwork', image: '/assets/tattoo_tiger.jpg' },
   { id: '3', title: 'O Estúdio', category: 'Bastidores', image: '/assets/tattoo_action.jpg' },
-  {
-    id: '4',
-    title: 'Silêncio de Lótus',
-    category: 'Fine Line',
-    image: 'https://images.unsplash.com/photo-1560707854-fb9a10eeaace?auto=format&fit=crop&q=80&w=1000',
-    placeholder: true,
-  },
-  {
-    id: '5',
-    title: 'A Grande Onda',
-    category: 'Irezumi',
-    image: 'https://images.unsplash.com/photo-1611501275019-9b5cda994e8d?auto=format&fit=crop&q=80&w=1000',
-    placeholder: true,
-  },
 ];
 
 export const RITUAL_STEPS: RitualStep[] = [
