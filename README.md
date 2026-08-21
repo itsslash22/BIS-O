@@ -1,20 +1,40 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Bisão Ink
 
-# Run and deploy your AI Studio app
+Site do estúdio de tatuagem Bisão Ink — Reduto, Belém - PA.
 
-This contains everything you need to run your app locally.
+React 19 + Vite + TypeScript, com Tailwind CSS e Framer Motion.
 
-View your app in AI Studio: https://ai.studio/apps/drive/1vZdNybyH5h8xU55bfdcBZ7GxD1Bm8LvS
+## Rodar local
 
-## Run Locally
+**Requisito:** Node.js 18+
 
-**Prerequisites:**  Node.js
+```bash
+npm install
+npm run dev
+```
 
+O site sobe em http://localhost:3000.
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+```bash
+npm run build     # gera dist/
+npm run preview   # serve o dist/ para conferir antes de publicar
+```
+
+## Estrutura
+
+| Caminho | O que é |
+| --- | --- |
+| `constants.tsx` | Link do WhatsApp, Instagram, endereço do estúdio e dados do portfólio |
+| `components/` | Seções da página (Hero, Craft, Portfolio, Ritual, Schedule, Footer) |
+| `hooks/useIsMobile.ts` | Detecta mobile via media query, com listener de resize |
+| `public/assets/` | Fotos e vídeo |
+
+## Pendências
+
+- **Fotos do portfólio:** os itens marcados com `placeholder: true` em `constants.tsx`
+  ainda são banco de imagem. Trocar por trabalho real do Bisão em `public/assets/`.
+- **Vídeo do herói:** `public/assets/hero_mobile.mp4` tem 5 MB. Recomprimir
+  (alvo: menos de 1,5 MB) e gerar uma versão `.webm`.
+- **Domínio:** as URLs absolutas em `index.html` (canonical, Open Graph,
+  JSON-LD) estão apontando para `https://bisaoink.com.br/`. Ajustar quando o
+  domínio final for definido.

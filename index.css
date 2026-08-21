@@ -1,48 +1,41 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 255, 255, 255;
-  --background-start-rgb: 0, 0, 0;
-  --background-end-rgb: 0, 0, 0;
+@layer base {
+  body {
+    @apply bg-black text-white font-sans antialiased;
+    overflow-x: hidden;
+  }
+
+  /* O scroll suave é feito em JS no Header; o nativo brigaria com ele. */
+  html {
+    scroll-behavior: auto;
+  }
+
+  /* Respeita quem pediu menos animação no sistema. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: rgb(var(--background-start-rgb));
-  font-family: 'Inter', sans-serif;
-  overflow-x: hidden;
-  -webkit-font-smoothing: antialiased;
+@layer utilities {
+  .vertical-text {
+    writing-mode: vertical-rl;
+  }
 }
 
-.font-display {
-  font-family: 'Playfair Display', serif;
-}
-
-.font-logo {
-  font-family: 'Syncopate', sans-serif;
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
-}
-
-.vertical-text {
-  writing-mode: vertical-rl;
-}
-
-/* Custom Selection */
 ::selection {
   background: #b91c1c;
   color: white;
 }
 
-/* Custom Smooth Scroll Handled via JS */
-html {
-  scroll-behavior: auto;
-}
-
-/* Scrollbar */
 ::-webkit-scrollbar {
   width: 5px;
 }

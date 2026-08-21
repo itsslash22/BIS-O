@@ -1,58 +1,72 @@
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BISÃO INK | Master Tattoo Artist</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+
+    <title>Bisão Ink | Tatuagem Autoral em Belém - PA</title>
+    <meta name="description" content="Estúdio de tatuagem autoral em Belém do Pará. Blackwork e tradicional visceral, com hora marcada e atendimento exclusivo no Reduto. Nada de cópias.">
+    <meta name="author" content="Bisão Ink">
+    <meta name="theme-color" content="#000000">
+    <!-- TODO: trocar pelo domínio final quando o site for publicado. -->
+    <link rel="canonical" href="https://bisaoink.com.br/">
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+    <!-- Open Graph: é o que aparece quando o link é colado no WhatsApp / Instagram. -->
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="pt_BR">
+    <meta property="og:site_name" content="Bisão Ink">
+    <meta property="og:title" content="Bisão Ink | Tatuagem Autoral em Belém - PA">
+    <meta property="og:description" content="Blackwork e tradicional visceral no Reduto, Belém - PA. Peças únicas, com hora marcada. Nada de cópias.">
+    <meta property="og:url" content="https://bisaoink.com.br/">
+    <meta property="og:image" content="https://bisaoink.com.br/assets/artist_pro.jpg">
+    <meta property="og:image:alt" content="Bisão tatuando no estúdio">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Bisão Ink | Tatuagem Autoral em Belém - PA">
+    <meta name="twitter:description" content="Blackwork e tradicional visceral no Reduto, Belém - PA. Peças únicas, com hora marcada.">
+    <meta name="twitter:image" content="https://bisaoink.com.br/assets/artist_pro.jpg">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Inter:wght@100..900&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Fundo pintado antes do CSS principal para não piscar branco no carregamento. -->
     <style>
-        body {
-            background-color: #000000;
-            color: #ffffff;
-            margin: 0;
-            overflow-x: hidden;
-            font-family: 'Inter', sans-serif;
-        }
-        .font-display {
-            font-family: 'Playfair Display', serif;
-        }
-        .font-logo {
-            font-family: 'Syncopate', sans-serif;
-            text-transform: uppercase;
-        }
-        /* Custom smooth scroll disabled for custom JS implementation */
-        html {
-            scroll-behavior: auto;
-        }
-        ::-webkit-scrollbar {
-            width: 4px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #000000;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #8B0000;
-        }
+        html, body { background-color: #000; color: #fff; margin: 0; }
     </style>
-<script type="importmap">
-{
-  "imports": {
-    "lucide-react": "https://esm.sh/lucide-react@^0.563.0",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
-    "framer-motion": "https://esm.sh/framer-motion@^12.31.0",
-    "react/": "https://esm.sh/react@^19.2.4/",
-    "react": "https://esm.sh/react@^19.2.4"
-  }
-}
-</script>
-<link rel="stylesheet" href="/index.css">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "TattooParlor",
+      "name": "Bisão Ink",
+      "description": "Estúdio de tatuagem autoral em Belém do Pará. Blackwork e tradicional visceral, com hora marcada.",
+      "url": "https://bisaoink.com.br/",
+      "image": "https://bisaoink.com.br/assets/artist_pro.jpg",
+      "priceRange": "$$",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "R. 28 de Setembro, 600",
+        "addressLocality": "Belém",
+        "addressRegion": "PA",
+        "postalCode": "66053-355",
+        "addressCountry": "BR"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": -1.4507,
+        "longitude": -48.4902
+      },
+      "telephone": "+5591993171598",
+      "sameAs": ["https://www.instagram.com/bisaoink/"],
+      "areaServed": "Belém - PA"
+    }
+    </script>
 </head>
 <body>
     <div id="root"></div>
-<script type="module" src="/index.tsx"></script>
+    <script type="module" src="/index.tsx"></script>
 </body>
 </html>
