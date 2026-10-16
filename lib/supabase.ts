@@ -23,8 +23,14 @@ export const supabase: SupabaseClient | null = supabaseConfigurado
   ? createClient(url!, chave!, { auth: { persistSession: true, autoRefreshToken: true } })
   : null;
 
-export const AVISO_SEM_CONFIG =
-  'Supabase não configurado. Defina VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY no .env.local.';
+/**
+ * As variáveis entram no bundle na hora do build, não quando a página abre.
+ * Em produção o .env.local não existe: elas precisam estar cadastradas na
+ * hospedagem antes do deploy, e cadastrar depois só vale com um deploy novo.
+ */
+export const AVISO_SEM_CONFIG = import.meta.env.DEV
+  ? 'Supabase não configurado. Defina VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY no .env.local.'
+  : 'Supabase não configurado neste deploy. Cadastre VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY nas variáveis de ambiente da hospedagem e publique de novo.';
 
 /**
  * Erro do Supabase legível.

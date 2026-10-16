@@ -29,12 +29,23 @@ npm run preview   # serve o dist/ para conferir antes de publicar
 | `hooks/useIsMobile.ts` | Detecta mobile via media query, com listener de resize |
 | `public/assets/` | Fotos e vídeo |
 
+## Publicar
+
+O site está em https://www.bisãoink.com.br/ (painel do vale presente em `/#/admin`).
+
+O vale presente e o painel dependem de duas variáveis, as mesmas do
+`.env.example`:
+
+- `VITE_SUPABASE_URL`
+- `VITE_SUPABASE_ANON_KEY`
+
+Elas entram no JavaScript **na hora do build**. Por isso, na hospedagem, elas
+vão nas variáveis de ambiente do projeto (não em arquivo), e qualquer mudança
+nelas só aparece depois de um deploy novo. A `service_role` nunca vai aí.
+
 ## Pendências
 
 - **Fotos do portfólio:** os itens marcados com `placeholder: true` em `constants.tsx`
   ainda são banco de imagem. Trocar por trabalho real do Bisão em `public/assets/`.
 - **Vídeo do herói:** `public/assets/hero_mobile.mp4` tem 5 MB. Recomprimir
   (alvo: menos de 1,5 MB) e gerar uma versão `.webm`.
-- **Domínio:** as URLs absolutas em `index.html` (canonical, Open Graph,
-  JSON-LD) estão apontando para `https://bisaoink.com.br/`. Ajustar quando o
-  domínio final for definido.
