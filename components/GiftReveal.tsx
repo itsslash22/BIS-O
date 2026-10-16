@@ -1,6 +1,7 @@
 import React from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { GiftCard } from './ui/gift-card';
+import { InkBurst, type InkBurstHandle } from './ui/ink-burst';
 import { emReais, VALIDADE_MESES, type Presente } from '../lib/gift';
 import { INSTAGRAM_LINK, WHATSAPP_NUMBER } from '../constants';
 
@@ -25,7 +26,30 @@ const GiftReveal: React.FC<{ presente: Presente }> = ({ presente }) => {
     )} e gostaria de agendar.`
   )}`;
 
-  const abrir = () => setToques((t) => Math.min(TOQUES_PARA_ABRIR, t + 1));
+  const tinta = React.useRef<InkBurstHandle>(null);
+
+  /**
+   * A contagem vive também num ref porque precisa de duas coisas ao mesmo
+   * tempo, e cada uma sozinha quebra de um jeito:
+   *
+   * - O respingo não pode morar dentro do atualizador de `setToques`: o React
+   *   chama o atualizador duas vezes em desenvolvimento e a tinta saía dobrada.
+   * - Mas ler `toques` direto do render perde toques: três batidas rápidas
+   *   entram no mesmo lote, leem o mesmo valor e avançam um passo só — e
+   *   batida rápida é justamente o que se faz com uma caixa de presente.
+   *
+   * O ref atualiza na hora, então cada toque conta; o estado acompanha para
+   * redesenhar.
+   */
+  const toquesRef = React.useRef(0);
+
+  const abrir = () => {
+    if (toquesRef.current >= TOQUES_PARA_ABRIR) return;
+    const proximo = toquesRef.current + 1;
+    toquesRef.current = proximo;
+    setToques(proximo);
+    if (!reduzido) tinta.current?.respingar(proximo === TOQUES_PARA_ABRIR ? 1 : proximo * 0.22);
+  };
 
   // Intensidade cresce a cada toque: tremida, luz e o quanto a tampa levanta.
   const tremida = reduzido ? [0] : [0, -2 - toques * 2, 2 + toques * 2, -1 - toques, 0];
@@ -38,6 +62,10 @@ const GiftReveal: React.FC<{ presente: Presente }> = ({ presente }) => {
         className="pointer-events-none absolute left-1/2 top-1/2 h-[70vmin] w-[70vmin] -translate-x-1/2 -translate-y-1/2 rounded-full bg-red-700/20 blur-[100px] transition-opacity duration-700"
         style={{ opacity: 0.25 + brilho * 0.75 }}
       />
+
+      {/* A tinta voa por cima do fundo e por baixo do conteúdo, para o cartão
+          não ser encoberto no momento em que a pessoa quer lê-lo. */}
+      <InkBurst ref={tinta} className="absolute inset-0 z-[5] h-full w-full" />
 
       <AnimatePresence mode="wait">
         {!aberto ? (
@@ -143,14 +171,30 @@ const GiftReveal: React.FC<{ presente: Presente }> = ({ presente }) => {
               Confirme o código com o estúdio ao agendar. Válido por {VALIDADE_MESES} meses.
             </p>
 
-            <a
-              href={INSTAGRAM_LINK}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-8 font-mono text-[10px] uppercase tracking-[0.3em] text-white/40 transition-colors hover:text-white"
-            >
-              @bisaoink
-            </a>
+            {/*
+              Volta para o site. Quem recebeu o vale muitas vezes nunca ouviu
+              falar do estúdio e quer ver o trabalho antes de agendar — sem
+              isto, a única saída da tela era o WhatsApp.
+              Sair da rota é só limpar o hash: o listener em App.tsx percebe e
+              devolve a página, sem recarregar nada.
+            */}
+            <div className="mt-10 flex items-center gap-5">
+              <a
+                href={location.pathname}
+                className="font-mono text-[10px] uppercase tracking-[0.3em] text-white/40 transition-colors hover:text-white"
+              >
+                Ver o trabalho do Bisão
+              </a>
+              <span aria-hidden className="h-3 w-px bg-white/15" />
+              <a
+                href={INSTAGRAM_LINK}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-mono text-[10px] uppercase tracking-[0.3em] text-white/40 transition-colors hover:text-white"
+              >
+                @bisaoink
+              </a>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
