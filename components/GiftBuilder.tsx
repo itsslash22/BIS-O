@@ -134,8 +134,8 @@ const GiftBuilder: React.FC = () => {
                   <span className="font-logo text-lg text-white/50">R$</span>
                   <input
                     type="number"
-                    min={50}
-                    step={50}
+                    min={1}
+                    step={1}
                     value={valor}
                     onChange={(e) => setValor(Math.max(0, Number(e.target.value)))}
                     className={entrada}

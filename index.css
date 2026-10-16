@@ -3,6 +3,16 @@
 @tailwind utilities;
 
 @layer base {
+  /**
+   * Avisa o navegador que a página é escura. Com isso ele desenha os controles
+   * nativos — lista do <select>, setinhas do campo numérico, barra de rolagem —
+   * em tema escuro. Sem isso o dropdown abre branco e azul no Windows, atravessado
+   * no meio de uma página preta.
+   */
+  :root {
+    color-scheme: dark;
+  }
+
   body {
     @apply bg-black text-white font-sans antialiased;
     overflow-x: hidden;

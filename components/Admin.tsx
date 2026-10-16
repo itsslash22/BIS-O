@@ -14,6 +14,15 @@ import { emReais, linkDoVale, paraCentavos, paraReais, REGIOES, TAMANHOS, type T
 const entrada =
   'w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-white placeholder:text-white/25 outline-none transition-colors focus:border-red-700';
 
+/**
+ * O <select> nativo desenha a lista com o tema do sistema — no Windows ela abre
+ * branca e azul, atravessada no meio do painel preto. Pintar o <option> é o
+ * reforço do color-scheme: dark declarado no index.css, que já manda o
+ * navegador desenhar os controles nativos no tema escuro. Sem appearance-none:
+ * ele apagaria a setinha e o campo viraria um texto comum.
+ */
+const selecao = entrada + ' [&>option]:bg-neutral-900 [&>option]:text-white';
+
 const CORES_STATUS: Record<string, string> = {
   ativo: 'text-emerald-400 border-emerald-400/30 bg-emerald-400/10',
   usado: 'text-white/50 border-white/15 bg-white/5',
@@ -225,16 +234,22 @@ const Admin: React.FC = () => {
               <input value={de} onChange={(e) => setDe(e.target.value)} maxLength={60} placeholder="De quem (opcional)" className={entrada} />
               <div className="flex items-center gap-3">
                 <span className="font-logo text-white/50">R$</span>
-                <input type="number" min={1} step={10} required value={valor} onChange={(e) => setValor(Number(e.target.value))} className={entrada} />
+                {/*
+                  step={1}, não 10. Com min={1} e step={10} o navegador monta a
+                  grade 1, 11, 21… e recusa 700 — "os dois valores válidos mais
+                  próximos são 691 e 701". Valor de vale é número livre: o
+                  estúdio cobra 700, 150 ou 75 conforme a peça.
+                */}
+                <input type="number" min={1} step={1} required value={valor} onChange={(e) => setValor(Number(e.target.value))} className={entrada} />
               </div>
               <div className="grid grid-cols-2 gap-3">
-                <select value={regiao} onChange={(e) => setRegiao(e.target.value)} className={entrada}>
+                <select value={regiao} onChange={(e) => setRegiao(e.target.value)} className={selecao}>
                   <option value="">Região (opcional)</option>
                   {REGIOES.map((r) => (
                     <option key={r.id} value={r.id}>{r.nome}</option>
                   ))}
                 </select>
-                <select value={tamanho} onChange={(e) => setTamanho(e.target.value as Tamanho)} className={entrada}>
+                <select value={tamanho} onChange={(e) => setTamanho(e.target.value as Tamanho)} className={selecao}>
                   {TAMANHOS.map((t) => (
                     <option key={t.id} value={t.id}>{t.nome}</option>
                   ))}
