@@ -130,6 +130,27 @@ $$;
 revoke all on function public.buscar_vale(text) from public;
 grant execute on function public.buscar_vale(text) to anon, authenticated;
 
+-- -------------------------------------------------------------- permissões --
+--
+-- Com "Automatically expose new tables" desligado no projeto, a Data API não
+-- recebe permissão sozinha e é aqui que ela se concede — explicitamente, uma
+-- tabela por vez. É o modo recomendado: o padrão passa a ser "ninguém acessa",
+-- e abrir vira decisão consciente.
+--
+-- RLS e GRANT são camadas diferentes e as duas precisam permitir. GRANT diz
+-- "pode falar com esta tabela"; a política diz "pode ver estas linhas". Sem o
+-- GRANT, o painel toma "permission denied" mesmo com a política correta.
+
+grant usage on schema public to anon, authenticated;
+
+-- O admin opera pela tabela; o RLS acima restringe às linhas e ao e-mail certo.
+grant select, insert, update, delete on public.vales to authenticated;
+grant select on public.admins to authenticated;
+
+-- Ao anônimo, nada. Nem select. A única porta dele é buscar_vale, logo acima.
+revoke all on public.vales from anon;
+revoke all on public.admins from anon;
+
 -- ------------------------------------------------------------------ início --
 -- Troque pelo e-mail que o Bisão vai usar para entrar no painel, e crie esse
 -- usuário em Authentication > Users. Deixe o cadastro público desativado.
