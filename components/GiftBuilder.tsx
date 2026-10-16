@@ -1,6 +1,6 @@
 import React from 'react';
 import { Check, Copy, MessageCircle } from 'lucide-react';
-import { BodyMap } from './ui/body-map';
+import { RegionPicker } from './ui/region-picker';
 import { GiftCard } from './ui/gift-card';
 import {
   emReais,
@@ -87,15 +87,12 @@ const GiftBuilder: React.FC = () => {
         <div className="mt-16 grid gap-16 lg:grid-cols-[1.15fr_1fr]">
           {/* Escolhas */}
           <div className="space-y-10">
+            {/* Tamanho vem antes da região: agora cada região mostra o próprio
+                "a partir de", e esse número depende do tamanho. Na ordem
+                anterior a pessoa escolhia vendo preço de peça média e via tudo
+                mudar no passo seguinte. */}
             <div>
-              <p className="mb-5 font-mono text-[10px] uppercase tracking-[0.3em] text-white/50">
-                1. Onde seria a tatuagem
-              </p>
-              <BodyMap lado={lado} onLadoChange={setLado} selecionada={regiao} onSelecionar={setRegiao} />
-            </div>
-
-            <div>
-              <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.3em] text-white/50">2. Tamanho</p>
+              <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.3em] text-white/50">1. Tamanho</p>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                 {TAMANHOS.map((t) => (
                   <button
@@ -114,6 +111,13 @@ const GiftBuilder: React.FC = () => {
                   </button>
                 ))}
               </div>
+            </div>
+
+            <div>
+              <p className="mb-5 font-mono text-[10px] uppercase tracking-[0.3em] text-white/50">
+                2. Onde seria a tatuagem
+              </p>
+              <RegionPicker lado={lado} onLadoChange={setLado} selecionada={regiao} onSelecionar={setRegiao} tamanho={tamanho} />
             </div>
 
             {faixa && r ? (
