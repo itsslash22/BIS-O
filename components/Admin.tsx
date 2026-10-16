@@ -1,6 +1,6 @@
 import React from 'react';
 import { Check, Copy, LogOut, RefreshCw } from 'lucide-react';
-import { supabase, supabaseConfigurado, AVISO_SEM_CONFIG } from '../lib/supabase';
+import { supabase, supabaseConfigurado, AVISO_SEM_CONFIG, mensagemDeErro } from '../lib/supabase';
 import {
   cancelarVale,
   darBaixa,
@@ -109,7 +109,7 @@ const Admin: React.FC = () => {
       setVales(await listarVales());
     } catch (e) {
       // Erro de política aparece aqui: entrou, mas o e-mail não está em `admins`.
-      setErro(e instanceof Error ? e.message : 'Não consegui carregar os vales.');
+      setErro(mensagemDeErro(e));
     } finally {
       setCarregando(false);
     }
@@ -150,7 +150,7 @@ const Admin: React.FC = () => {
       setObservacao('');
       await recarregar();
     } catch (err) {
-      setErro(err instanceof Error ? err.message : 'Não consegui emitir.');
+      setErro(mensagemDeErro(err));
     } finally {
       setEmitindo(false);
     }
@@ -162,7 +162,7 @@ const Admin: React.FC = () => {
       await fn();
       await recarregar();
     } catch (err) {
-      setErro(err instanceof Error ? err.message : 'Não consegui atualizar.');
+      setErro(mensagemDeErro(err));
     }
   };
 

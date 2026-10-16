@@ -25,3 +25,20 @@ export const supabase: SupabaseClient | null = supabaseConfigurado
 
 export const AVISO_SEM_CONFIG =
   'Supabase não configurado. Defina VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY no .env.local.';
+
+/**
+ * Erro do Supabase legível.
+ *
+ * O cliente rejeita com PostgrestError, que é objeto simples e não `Error` —
+ * então um `e instanceof Error ? e.message : 'falhou'` descarta exatamente o
+ * detalhe que resolve o problema. Aqui o código e a dica do Postgres chegam à
+ * tela, que é onde servem.
+ */
+export function mensagemDeErro(e: unknown): string {
+  if (!e) return 'Erro desconhecido.';
+  if (typeof e === 'string') return e;
+  const o = e as { message?: string; code?: string; hint?: string; details?: string };
+  const partes = [o.message, o.details, o.hint].filter(Boolean);
+  const texto = partes.join(' — ') || 'Erro desconhecido.';
+  return o.code ? `[${o.code}] ${texto}` : texto;
+}
