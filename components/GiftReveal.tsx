@@ -2,31 +2,60 @@ import React from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { GiftCard } from './ui/gift-card';
 import { InkBurst, type InkBurstHandle } from './ui/ink-burst';
-import { emReais, VALIDADE_MESES, type Presente } from '../lib/gift';
+import { emReais, paraReais, VALIDADE_MESES, type Presente, type Tamanho } from '../lib/gift';
+import { buscarVale, type ValePublico } from '../lib/vales';
+import { supabaseConfigurado } from '../lib/supabase';
 import { INSTAGRAM_LINK, WHATSAPP_NUMBER } from '../constants';
 
 const TOQUES_PARA_ABRIR = 3;
 
+const Aviso: React.FC<{ titulo: string; texto: string }> = ({ titulo, texto }) => (
+  <main className="flex min-h-[100svh] flex-col items-center justify-center gap-4 bg-black px-8 text-center text-white">
+    <p className="font-mono text-[10px] uppercase tracking-[0.4em] text-red-500">Vale presente</p>
+    <h1 className="font-display text-3xl italic">{titulo}</h1>
+    <p className="max-w-sm text-sm leading-relaxed text-white/50">{texto}</p>
+    <a
+      href={location.pathname}
+      className="mt-6 font-mono text-[10px] uppercase tracking-[0.3em] text-white/40 transition-colors hover:text-white"
+    >
+      Ir para o site
+    </a>
+  </main>
+);
+
 /**
  * A revelação. Três toques, não "vários": repetição demais vira tarefa. O que
  * segura a pessoa é cada toque mudar algo visível — a caixa treme, racha com
- * luz saindo, depois abre — para ela saber que está progredindo.
+ * luz saindo, depois abre.
  *
- * Quem pediu menos animação no sistema pula a brincadeira e vai direto ao
- * cartão: o presente é a informação, a caixa é só a embalagem.
+ * O vale vem do banco, pelo código na URL. A URL não afirma mais nada: antes
+ * ela carregava o presente inteiro embutido, e bastava trocar o valor na barra
+ * de endereço para forjar um vale.
  */
-const GiftReveal: React.FC<{ presente: Presente }> = ({ presente }) => {
+const GiftReveal: React.FC<{ codigo: string }> = ({ codigo }) => {
   const reduzido = useReducedMotion();
   const [toques, setToques] = React.useState(0);
+  const [vale, setVale] = React.useState<ValePublico | null>(null);
+  const [erro, setErro] = React.useState<string | null>(null);
+  const [carregando, setCarregando] = React.useState(true);
   const aberto = toques >= TOQUES_PARA_ABRIR;
-
-  const whatsapp = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-    `Olá! Recebi um vale presente de ${presente.de || 'alguém especial'} no valor de ${emReais(
-      presente.valor
-    )} e gostaria de agendar.`
-  )}`;
-
   const tinta = React.useRef<InkBurstHandle>(null);
+
+  React.useEffect(() => {
+    let cancelado = false;
+    setCarregando(true);
+    buscarVale(codigo)
+      .then((v) => {
+        if (cancelado) return;
+        setVale(v);
+        setErro(v ? null : 'nao-encontrado');
+      })
+      .catch(() => !cancelado && setErro('falhou'))
+      .finally(() => !cancelado && setCarregando(false));
+    return () => {
+      cancelado = true;
+    };
+  }, [codigo]);
 
   /**
    * A contagem vive também num ref porque precisa de duas coisas ao mesmo
@@ -34,12 +63,9 @@ const GiftReveal: React.FC<{ presente: Presente }> = ({ presente }) => {
    *
    * - O respingo não pode morar dentro do atualizador de `setToques`: o React
    *   chama o atualizador duas vezes em desenvolvimento e a tinta saía dobrada.
-   * - Mas ler `toques` direto do render perde toques: três batidas rápidas
-   *   entram no mesmo lote, leem o mesmo valor e avançam um passo só — e
-   *   batida rápida é justamente o que se faz com uma caixa de presente.
-   *
-   * O ref atualiza na hora, então cada toque conta; o estado acompanha para
-   * redesenhar.
+   * - Mas ler `toques` do render perde toques: três batidas rápidas entram no
+   *   mesmo lote, leem o mesmo valor e avançam um passo só — e batida rápida é
+   *   justamente o que se faz com uma caixa de presente.
    */
   const toquesRef = React.useRef(0);
 
@@ -51,7 +77,45 @@ const GiftReveal: React.FC<{ presente: Presente }> = ({ presente }) => {
     if (!reduzido) tinta.current?.respingar(proximo === TOQUES_PARA_ABRIR ? 1 : proximo * 0.22);
   };
 
-  // Intensidade cresce a cada toque: tremida, luz e o quanto a tampa levanta.
+  if (!supabaseConfigurado) {
+    return <Aviso titulo="Vales ainda não ativados" texto="O estúdio está terminando de configurar esta parte. Chame no WhatsApp que a gente resolve na hora." />;
+  }
+  if (carregando) {
+    return (
+      <main className="flex min-h-[100svh] items-center justify-center bg-black">
+        <p className="font-mono text-[10px] uppercase tracking-[0.4em] text-white/40">Abrindo…</p>
+      </main>
+    );
+  }
+  if (erro === 'nao-encontrado' || !vale) {
+    return <Aviso titulo="Vale não encontrado" texto="Confira se o link veio completo. Se veio de alguém, peça para reenviar — cada vale tem um código único emitido pelo estúdio." />;
+  }
+  if (erro === 'falhou') {
+    return <Aviso titulo="Não consegui conferir agora" texto="Pode ser a conexão. Tente de novo em instantes, ou fale com o estúdio pelo WhatsApp." />;
+  }
+  if (vale.status !== 'ativo') {
+    const motivo =
+      vale.status === 'usado'
+        ? 'Este vale já foi utilizado.'
+        : vale.status === 'expirado'
+          ? 'Este vale passou da validade.'
+          : 'Este vale foi cancelado.';
+    return <Aviso titulo="Vale indisponível" texto={`${motivo} Se achar que houve engano, fale com o estúdio.`} />;
+  }
+
+  const presente: Presente = {
+    para: vale.para,
+    de: vale.de ?? '',
+    valor: paraReais(vale.valor_centavos),
+    recado: vale.recado ?? undefined,
+    regiao: vale.regiao ?? undefined,
+    tamanho: (vale.tamanho as Tamanho) ?? undefined,
+  };
+
+  const whatsapp = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
+    `Olá! Tenho o vale presente ${vale.codigo}, de ${emReais(presente.valor)}, e gostaria de agendar.`
+  )}`;
+
   const tremida = reduzido ? [0] : [0, -2 - toques * 2, 2 + toques * 2, -1 - toques, 0];
   const brilho = toques / TOQUES_PARA_ABRIR;
 
@@ -77,9 +141,7 @@ const GiftReveal: React.FC<{ presente: Presente }> = ({ presente }) => {
             <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.4em] text-white/50">
               {presente.de ? `${presente.de} deixou algo para você` : 'Alguém deixou algo para você'}
             </p>
-            <p className="mb-10 font-display text-3xl italic text-white sm:text-4xl">
-              {presente.para}
-            </p>
+            <p className="mb-10 font-display text-3xl italic text-white sm:text-4xl">{presente.para}</p>
 
             <motion.button
               type="button"
@@ -87,33 +149,25 @@ const GiftReveal: React.FC<{ presente: Presente }> = ({ presente }) => {
               aria-label={`Abrir o presente. Toque ${toques} de ${TOQUES_PARA_ABRIR}`}
               animate={{ rotate: tremida }}
               transition={{ duration: 0.4 }}
-              // A chave troca a cada toque para a animação de tremida reiniciar.
               key={`tremida-${toques}`}
               className="relative outline-none focus-visible:ring-2 focus-visible:ring-red-600 focus-visible:ring-offset-4 focus-visible:ring-offset-black"
             >
               <svg width="200" height="190" viewBox="0 0 200 190" className="drop-shadow-[0_20px_60px_rgba(185,28,28,0.3)]">
-                {/* Luz escapando pela fresta, mais forte a cada toque */}
                 <motion.rect
                   x="30" y="58" width="140" height="14" rx="3"
                   className="fill-red-500"
                   animate={{ opacity: brilho }}
                   transition={{ duration: 0.3 }}
                 />
-                {/* Corpo */}
                 <rect x="34" y="66" width="132" height="104" rx="6" className="fill-neutral-900 stroke-white/20" strokeWidth="2" />
                 <rect x="92" y="66" width="16" height="104" className="fill-red-700/80" />
-                {/* Tampa — levanta e tomba no último toque */}
                 <motion.g
-                  animate={{
-                    y: reduzido ? 0 : -toques * 7,
-                    rotate: reduzido ? 0 : toques * -3,
-                  }}
+                  animate={{ y: reduzido ? 0 : -toques * 7, rotate: reduzido ? 0 : toques * -3 }}
                   style={{ originX: '0.5', originY: '1' }}
                   transition={{ type: 'spring', stiffness: 220, damping: 14 }}
                 >
                   <rect x="26" y="40" width="148" height="26" rx="5" className="fill-neutral-800 stroke-white/25" strokeWidth="2" />
                   <rect x="92" y="40" width="16" height="26" className="fill-red-700" />
-                  {/* Laço */}
                   <path d="M100 40 c-16-14-34-6-30 6 M100 40 c16-14 34-6 30 6" className="fill-none stroke-red-600" strokeWidth="5" strokeLinecap="round" />
                 </motion.g>
               </svg>
@@ -145,7 +199,7 @@ const GiftReveal: React.FC<{ presente: Presente }> = ({ presente }) => {
               Seu presente
             </p>
 
-            <GiftCard presente={presente} />
+            <GiftCard presente={presente} codigo={vale.codigo} />
 
             {presente.recado ? (
               <p className="mt-8 max-w-sm text-center font-display text-lg italic leading-relaxed text-white/80">
@@ -162,22 +216,11 @@ const GiftReveal: React.FC<{ presente: Presente }> = ({ presente }) => {
               Agendar minha sessão
             </a>
 
-            {/*
-              O link carrega os dados do presente, então qualquer pessoa pode
-              editá-lo na barra de endereço. Dizer isso aqui, em voz baixa mas
-              em voz alta, evita mal-entendido na hora de usar.
-            */}
             <p className="mt-6 max-w-xs text-center font-mono text-[9px] uppercase leading-relaxed tracking-[0.15em] text-white/35">
-              Confirme o código com o estúdio ao agendar. Válido por {VALIDADE_MESES} meses.
+              Código {vale.codigo} · válido até{' '}
+              {new Date(vale.expira_em).toLocaleDateString('pt-BR')} · {VALIDADE_MESES} meses
             </p>
 
-            {/*
-              Volta para o site. Quem recebeu o vale muitas vezes nunca ouviu
-              falar do estúdio e quer ver o trabalho antes de agendar — sem
-              isto, a única saída da tela era o WhatsApp.
-              Sair da rota é só limpar o hash: o listener em App.tsx percebe e
-              devolve a página, sem recarregar nada.
-            */}
             <div className="mt-10 flex items-center gap-5">
               <a
                 href={location.pathname}

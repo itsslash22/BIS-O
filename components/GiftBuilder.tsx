@@ -1,12 +1,11 @@
 import React from 'react';
-import { Check, Copy, MessageCircle } from 'lucide-react';
+import { MessageCircle } from 'lucide-react';
 import { RegionPicker } from './ui/region-picker';
 import { GiftCard } from './ui/gift-card';
 import {
   emReais,
   faixaEstimada,
   LIMITE_RECADO,
-  linkDoPresente,
   regiaoPorId,
   TAMANHOS,
   VALIDADE_MESES,
@@ -34,7 +33,6 @@ const GiftBuilder: React.FC = () => {
   const [para, setPara] = React.useState('');
   const [de, setDe] = React.useState('');
   const [recado, setRecado] = React.useState('');
-  const [copiado, setCopiado] = React.useState(false);
 
   const faixa = regiao ? faixaEstimada(regiao, tamanho) : null;
   const r = regiao ? regiaoPorId(regiao) : null;
@@ -57,18 +55,7 @@ const GiftBuilder: React.FC = () => {
   };
 
   const pronto = presente.para.length > 0 && valor > 0;
-  const link = pronto ? linkDoPresente(presente) : '';
 
-  const copiar = async () => {
-    try {
-      await navigator.clipboard.writeText(link);
-      setCopiado(true);
-      window.setTimeout(() => setCopiado(false), 2000);
-    } catch {
-      // Clipboard bloqueado (http, permissão): o campo abaixo fica selecionável.
-      setCopiado(false);
-    }
-  };
 
   const pedido = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
     `Olá! Quero comprar um vale presente de ${emReais(valor)} para ${presente.para || '(nome)'}.` +
@@ -201,39 +188,30 @@ const GiftBuilder: React.FC = () => {
                 Pedir pelo WhatsApp
               </a>
 
-              <button
-                type="button"
-                onClick={copiar}
-                disabled={!pronto}
-                className="flex w-full items-center justify-center gap-3 rounded-full border border-white/15 px-8 py-4 text-[10px] font-black uppercase tracking-[0.3em] text-white/80 transition-colors hover:border-white/40 hover:text-white disabled:pointer-events-none disabled:opacity-30"
-              >
-                {copiado ? <Check size={14} /> : <Copy size={14} />}
-                {copiado ? 'Link copiado' : 'Copiar link da surpresa'}
-              </button>
             </div>
 
-            {pronto ? (
-              <div className="mt-6 space-y-3">
-                <input readOnly value={link} onFocus={(e) => e.currentTarget.select()} className={`${entrada} font-mono text-[11px]`} />
-                <a
-                  href={link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-block font-mono text-[10px] uppercase tracking-[0.25em] text-red-500 underline-offset-4 hover:underline"
-                >
-                  Ver como quem recebe vai ver →
-                </a>
-              </div>
-            ) : (
+            {!pronto ? (
               <p className="mt-6 font-mono text-[10px] uppercase tracking-[0.2em] text-white/35">
-                Preencha o nome de quem recebe para gerar o link
+                Preencha o nome de quem recebe para continuar
               </p>
-            )}
+            ) : null}
 
-            <p className="mt-8 text-[11px] leading-relaxed text-white/40">
-              O link é o embrulho: ele leva a animação e os dados do presente, e por isso pode ser
-              editado por quem tiver o endereço. O que vale é o código que o estúdio envia depois do
-              pagamento. Válido por {VALIDADE_MESES} meses a partir da emissão.
+            {/*
+              Aqui havia um botão que gerava o link do presente. Saiu de
+              propósito: aquele link carregava os dados dentro da URL, então
+              qualquer pessoa montava um na tela, mandava para alguém e dizia
+              que tinha dado um vale. Agora só o estúdio emite, depois de
+              receber — e o que sai de lá é um código único, registrado.
+            */}
+            <ol className="mt-8 space-y-3 border-l border-white/10 pl-5 text-[11px] leading-relaxed text-white/45">
+              <li>Você manda o pedido pelo WhatsApp e combina o pagamento.</li>
+              <li>O estúdio emite o vale e devolve o link com o código.</li>
+              <li>Você entrega o link; quem recebe abre a caixa.</li>
+            </ol>
+
+            <p className="mt-6 text-[11px] leading-relaxed text-white/40">
+              O vale é crédito em qualquer trabalho, vale por {VALIDADE_MESES} meses a partir da
+              emissão e pode ser conferido pelo código a qualquer momento.
             </p>
           </div>
         </div>

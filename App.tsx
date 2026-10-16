@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, lazy, useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Header from './components/Header';
 import Hero from './components/Hero';
@@ -9,8 +9,21 @@ import Quadros from './components/Quadros';
 import Schedule from './components/Schedule';
 import Footer from './components/Footer';
 import GiftBuilder from './components/GiftBuilder';
-import GiftReveal from './components/GiftReveal';
-import { lerPresenteDaUrl, type Presente } from './lib/gift';
+/**
+ * Revelação e painel entram sob demanda. Os dois carregam o cliente do
+ * Supabase, que sozinho pesa mais que tudo que já havia na página — e quem
+ * chega na home nunca toca em nenhum dos dois. Com o import estático o bundle
+ * tinha pulado de 435 kB para 675 kB.
+ */
+const GiftReveal = lazy(() => import('./components/GiftReveal'));
+const Admin = lazy(() => import('./components/Admin'));
+
+const Carregando = () => (
+  <main className="flex min-h-[100svh] items-center justify-center bg-black">
+    <p className="font-mono text-[10px] uppercase tracking-[0.4em] text-white/40">Abrindo…</p>
+  </main>
+);
+import { estaNoAdmin, lerCodigoDaUrl } from './lib/gift';
 
 /**
  * O loader existe para esconder o "flash" das fontes customizadas, não para
@@ -29,10 +42,10 @@ const App: React.FC = () => {
    * regra de reescrita na hospedagem. Os anchors da página (`#gallery`,
    * `#craft`) continuam valendo porque a rota começa com `#/`.
    */
-  const [presente, setPresente] = useState<Presente | null>(() => lerPresenteDaUrl());
+  const [rota, setRota] = useState(() => ({ codigo: lerCodigoDaUrl(), admin: estaNoAdmin() }));
 
   useEffect(() => {
-    const aoTrocar = () => setPresente(lerPresenteDaUrl());
+    const aoTrocar = () => setRota({ codigo: lerCodigoDaUrl(), admin: estaNoAdmin() });
     window.addEventListener('hashchange', aoTrocar);
     return () => window.removeEventListener('hashchange', aoTrocar);
   }, []);
@@ -53,7 +66,18 @@ const App: React.FC = () => {
 
   // A revelação toma a tela inteira: quem abre o link veio para o presente,
   // não para o site. Sem header, sem loader, sem rolagem até achar.
-  if (presente) return <GiftReveal presente={presente} />;
+  if (rota.admin)
+    return (
+      <Suspense fallback={<Carregando />}>
+        <Admin />
+      </Suspense>
+    );
+  if (rota.codigo)
+    return (
+      <Suspense fallback={<Carregando />}>
+        <GiftReveal codigo={rota.codigo} />
+      </Suspense>
+    );
 
   return (
     <div className="relative bg-black text-white selection:bg-red-700 selection:text-white overflow-x-hidden">

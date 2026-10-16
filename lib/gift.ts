@@ -90,54 +90,30 @@ export const LIMITE_RECADO = 140;
 /* -- O link -------------------------------------------------------------- */
 
 /**
- * btoa quebra em acento, e "João" tem acento. Converte para bytes antes, e usa
- * base64url para o resultado sobreviver a uma URL sem escape.
+ * O link carrega só o código. Antes ele carregava o presente inteiro embutido,
+ * e por isso qualquer pessoa trocava o valor na barra de endereço e dizia que
+ * tinha dado um vale. Agora a URL não afirma nada: ela aponta para um registro
+ * no banco, e editar o código só leva a "vale não encontrado".
  */
-const paraBase64Url = (texto: string) => {
-  const bytes = new TextEncoder().encode(texto);
-  let bin = '';
-  bytes.forEach((b) => (bin += String.fromCharCode(b)));
-  return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-};
-
-const deBase64Url = (texto: string) => {
-  const b64 = texto.replace(/-/g, '+').replace(/_/g, '/');
-  const bin = atob(b64 + '='.repeat((4 - (b64.length % 4)) % 4));
-  return new TextDecoder().decode(Uint8Array.from(bin, (c) => c.charCodeAt(0)));
-};
-
-/** Chaves curtas: o link vai no WhatsApp e ninguém gosta de link gigante. */
-export function codificarPresente(p: Presente): string {
-  const curto = { p: p.para, d: p.de, v: p.valor, m: p.recado || undefined, r: p.regiao, t: p.tamanho };
-  return paraBase64Url(JSON.stringify(curto));
-}
-
-export function decodificarPresente(codigo: string): Presente | null {
-  try {
-    const o = JSON.parse(deBase64Url(codigo));
-    if (typeof o?.p !== 'string' || typeof o?.v !== 'number') return null;
-    return {
-      para: String(o.p).slice(0, 60),
-      de: String(o.d ?? '').slice(0, 60),
-      valor: Math.max(0, Math.round(o.v)),
-      recado: o.m ? String(o.m).slice(0, LIMITE_RECADO) : undefined,
-      regiao: o.r ? String(o.r) : undefined,
-      tamanho: o.t,
-    };
-  } catch {
-    return null;
-  }
-}
-
-/** Rota por hash: funciona em hospedagem estática, sem redirecionamento. */
 export const ROTA_PRESENTE = '#/presente';
+export const ROTA_ADMIN = '#/admin';
 
-export const linkDoPresente = (p: Presente) =>
-  `${location.origin}${location.pathname}${ROTA_PRESENTE}?p=${codificarPresente(p)}`;
+export const linkDoVale = (codigo: string) =>
+  `${location.origin}${location.pathname}${ROTA_PRESENTE}?c=${encodeURIComponent(codigo)}`;
 
-export function lerPresenteDaUrl(): Presente | null {
+export function lerCodigoDaUrl(): string | null {
   const h = location.hash;
   if (!h.startsWith(ROTA_PRESENTE)) return null;
-  const codigo = new URLSearchParams(h.slice(h.indexOf('?') + 1)).get('p');
-  return codigo ? decodificarPresente(codigo) : null;
+  const q = h.indexOf('?');
+  if (q < 0) return null;
+  const c = new URLSearchParams(h.slice(q + 1)).get('c');
+  return c ? c.trim().toUpperCase() : null;
 }
+
+export const estaNoAdmin = () => location.hash.startsWith(ROTA_ADMIN);
+
+/* -- Dinheiro ------------------------------------------------------------ */
+
+/** O banco guarda centavos; a interface fala em reais. */
+export const paraCentavos = (reais: number) => Math.round(reais * 100);
+export const paraReais = (centavos: number) => centavos / 100;
