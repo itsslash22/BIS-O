@@ -8,6 +8,9 @@ import Ritual from './components/Ritual';
 import Quadros from './components/Quadros';
 import Schedule from './components/Schedule';
 import Footer from './components/Footer';
+import GiftBuilder from './components/GiftBuilder';
+import GiftReveal from './components/GiftReveal';
+import { lerPresenteDaUrl, type Presente } from './lib/gift';
 
 /**
  * O loader existe para esconder o "flash" das fontes customizadas, não para
@@ -19,6 +22,20 @@ const LOADER_MAX_MS = 800;
 
 const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
+
+  /**
+   * Rota por hash em vez de react-router: o site é estático, e `#/presente`
+   * nunca chega ao servidor — então o link sobrevive a um F5 sem precisar de
+   * regra de reescrita na hospedagem. Os anchors da página (`#gallery`,
+   * `#craft`) continuam valendo porque a rota começa com `#/`.
+   */
+  const [presente, setPresente] = useState<Presente | null>(() => lerPresenteDaUrl());
+
+  useEffect(() => {
+    const aoTrocar = () => setPresente(lerPresenteDaUrl());
+    window.addEventListener('hashchange', aoTrocar);
+    return () => window.removeEventListener('hashchange', aoTrocar);
+  }, []);
 
   useEffect(() => {
     let done = false;
@@ -33,6 +50,10 @@ const App: React.FC = () => {
 
     return () => clearTimeout(cap);
   }, []);
+
+  // A revelação toma a tela inteira: quem abre o link veio para o presente,
+  // não para o site. Sem header, sem loader, sem rolagem até achar.
+  if (presente) return <GiftReveal presente={presente} />;
 
   return (
     <div className="relative bg-black text-white selection:bg-red-700 selection:text-white overflow-x-hidden">
@@ -63,6 +84,7 @@ const App: React.FC = () => {
         <Portfolio />
         <Ritual />
         <Quadros />
+        <GiftBuilder />
         <Schedule />
       </main>
       <Footer />

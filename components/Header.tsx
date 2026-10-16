@@ -74,6 +74,7 @@ const Header: React.FC = () => {
     { name: 'Galeria', href: '#gallery' },
     { name: 'Filosofia', href: '#craft' },
     { name: 'O Ritual', href: '#ritual' },
+    { name: 'Presente', href: '#presente' },
     { name: 'Estúdio', href: '#schedule' },
   ];
 
