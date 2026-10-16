@@ -75,14 +75,17 @@ const Craft: React.FC = () => {
       )}
 
       <div className="max-w-[1400px] mx-auto relative z-10">
-        <div className="grid md:grid-cols-12 gap-12 md:gap-12 items-center">
+        {/* Mesma correção do Schedule: duas colunas declaradas como duas
+            trilhas. Em 12 colunas com gap-12 sobravam 4px por trilha a 768px,
+            e a coluna da imagem virava uma miniatura de 136px. */}
+        <div className="grid md:grid-cols-[1.5fr_1fr] gap-12 items-center">
           <motion.div
             style={({ y: yText, willChange: 'transform' } as any)}
             variants={containerVariants}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: '-100px' }}
-            className="md:col-span-8 lg:col-span-7 flex flex-col z-20"
+            className="flex flex-col z-20"
           >
             <motion.span
               variants={itemVariants}
@@ -118,7 +121,7 @@ const Craft: React.FC = () => {
 
           <motion.div
             style={({ opacity: opacityVisual, scale: scaleVisual, y: yVisual, willChange: 'transform' } as any)}
-            className="md:col-span-4 lg:col-span-5 relative"
+            className="relative"
           >
             <div className="w-full md:w-[85%] aspect-[3/4] md:aspect-[4/5] overflow-hidden group shadow-[0_0_100px_rgba(0,0,0,0.8)] border border-white/5 relative z-10 ml-auto">
               <img

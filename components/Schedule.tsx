@@ -13,10 +13,18 @@ const Schedule: React.FC = () => {
       <div className="absolute top-0 right-0 w-1/2 h-full bg-red-900/5 blur-[120px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 items-start">
+        {/*
+          Duas colunas, declaradas como duas trilhas.
+          Isto era `lg:grid-cols-12` com `lg:gap-24`: num grid de 12 colunas o
+          gap entra 11 vezes, então eram 1056px só de espaço vazio dentro de um
+          grid de 827px. As trilhas colapsavam para zero, a coluna da direita
+          virava pura soma de gaps e vazava para fora — o `overflow-hidden` da
+          seção cortava a rua e o mapa em qualquer tela abaixo de ~1440px.
+        */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-16 lg:gap-20 items-start">
 
           {/* Agendamento */}
-          <div className="lg:col-span-7 flex flex-col justify-center">
+          <div className="flex flex-col justify-center">
             <div className="mb-10">
               <span className="text-red-500 text-[10px] tracking-[0.5em] uppercase mb-4 block font-bold">Exclusividade</span>
               <h2 className="font-display text-5xl md:text-8xl text-white italic leading-[0.9] md:leading-[0.85] tracking-tighter text-balance">
@@ -46,7 +54,7 @@ const Schedule: React.FC = () => {
           </div>
 
           {/* Endereço + mapa */}
-          <div className="lg:col-span-5 flex flex-col items-start lg:items-end gap-8 lg:pt-24 w-full">
+          <div className="flex flex-col items-start lg:items-end gap-8 lg:pt-24 w-full">
             {/*
               Este bloco era `hidden lg:block`: quem abria no celular nunca via
               a rua, o número nem o CEP do estúdio. Agora aparece em toda tela

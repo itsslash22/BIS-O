@@ -37,7 +37,11 @@ const Portfolio: React.FC = () => {
         </motion.a>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-12 px-2 md:px-12">
+      {/* Aqui o grid de 12 colunas se justifica: os cards usam spans diferentes
+          para formar o mosaico. Mas o gap entra 11 vezes, então ele tem que ser
+          modesto — em md:gap-12 sobravam 4px por trilha a 768px e o mosaico
+          passava a ser desenhado pelos gaps, não pelos spans. */}
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-8 px-2 md:px-12">
         {PORTFOLIO_DATA.map((item, idx) => (
           <motion.div
             key={item.id}
