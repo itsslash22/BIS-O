@@ -1,13 +1,13 @@
 import React from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { GiftCard } from './ui/gift-card';
+import { TicketTear } from './ui/ticket-tear';
+import { TicketCampos } from './ui/ticket-campos';
 import { InkBurst, type InkBurstHandle } from './ui/ink-burst';
 import { emReais, paraReais, VALIDADE_MESES, type Presente, type Tamanho } from '../lib/gift';
 import { buscarVale, type ValePublico } from '../lib/vales';
 import { supabaseConfigurado } from '../lib/supabase';
 import { INSTAGRAM_LINK, WHATSAPP_NUMBER } from '../constants';
 
-const TOQUES_PARA_ABRIR = 3;
 
 const Aviso: React.FC<{ titulo: string; texto: string }> = ({ titulo, texto }) => (
   <main className="flex min-h-[100svh] flex-col items-center justify-center gap-4 bg-black px-8 text-center text-white">
@@ -24,9 +24,13 @@ const Aviso: React.FC<{ titulo: string; texto: string }> = ({ titulo, texto }) =
 );
 
 /**
- * A revelação. Três toques, não "vários": repetição demais vira tarefa. O que
- * segura a pessoa é cada toque mudar algo visível — a caixa treme, racha com
- * luz saindo, depois abre.
+ * A revelação.
+ *
+ * Aqui havia uma caixa de presente que abria em três toques. Saiu em favor do
+ * ingresso que o próprio Bisão desenhou: rasgar o canhoto é o gesto que se faz
+ * com um vale, e abrir caixa serve para qualquer coisa. A arte também já vinha
+ * com o picote, então o rasgo acontece na linha que ele traçou, não numa borda
+ * inventada por cima de um retângulo.
  *
  * O vale vem do banco, pelo código na URL. A URL não afirma mais nada: antes
  * ela carregava o presente inteiro embutido, e bastava trocar o valor na barra
@@ -34,16 +38,42 @@ const Aviso: React.FC<{ titulo: string; texto: string }> = ({ titulo, texto }) =
  */
 const GiftReveal: React.FC<{ codigo: string }> = ({ codigo }) => {
   const reduzido = useReducedMotion();
-  const [toques, setToques] = React.useState(0);
+  const [rasgado, setRasgado] = React.useState(false);
   const [vale, setVale] = React.useState<ValePublico | null>(null);
   const [erro, setErro] = React.useState<string | null>(null);
   const [carregando, setCarregando] = React.useState(true);
-  const aberto = toques >= TOQUES_PARA_ABRIR;
   const tinta = React.useRef<InkBurstHandle>(null);
 
   React.useEffect(() => {
     let cancelado = false;
     setCarregando(true);
+
+    /**
+     * Atalho de desenvolvimento: #/presente?c=DEMO monta um vale falso para
+     * revisar o rasgo sem precisar emitir um de verdade no banco.
+     *
+     * Protegido por import.meta.env.DEV, que o Vite substitui por `false` no
+     * build — o bloco inteiro é removido na publicação. Sem essa trava, seria
+     * exatamente o furo que o banco veio fechar: um vale que existe sem ter
+     * sido emitido.
+     */
+    if (import.meta.env.DEV && codigo === 'DEMO') {
+      setVale({
+        codigo: 'DEMONSTRACAO',
+        para: 'Ana Beatriz',
+        de: 'João',
+        recado: 'Pra você fechar aquele braço, irmã. Feliz aniversário!',
+        valor_centavos: 75000,
+        regiao: 'antebraco',
+        tamanho: 'media',
+        status: 'ativo',
+        expira_em: new Date(Date.now() + 365 * 864e5).toISOString(),
+      });
+      setErro(null);
+      setCarregando(false);
+      return;
+    }
+
     buscarVale(codigo)
       .then((v) => {
         if (cancelado) return;
@@ -57,25 +87,6 @@ const GiftReveal: React.FC<{ codigo: string }> = ({ codigo }) => {
     };
   }, [codigo]);
 
-  /**
-   * A contagem vive também num ref porque precisa de duas coisas ao mesmo
-   * tempo, e cada uma sozinha quebra de um jeito:
-   *
-   * - O respingo não pode morar dentro do atualizador de `setToques`: o React
-   *   chama o atualizador duas vezes em desenvolvimento e a tinta saía dobrada.
-   * - Mas ler `toques` do render perde toques: três batidas rápidas entram no
-   *   mesmo lote, leem o mesmo valor e avançam um passo só — e batida rápida é
-   *   justamente o que se faz com uma caixa de presente.
-   */
-  const toquesRef = React.useRef(0);
-
-  const abrir = () => {
-    if (toquesRef.current >= TOQUES_PARA_ABRIR) return;
-    const proximo = toquesRef.current + 1;
-    toquesRef.current = proximo;
-    setToques(proximo);
-    if (!reduzido) tinta.current?.respingar(proximo === TOQUES_PARA_ABRIR ? 1 : proximo * 0.22);
-  };
 
   if (!supabaseConfigurado) {
     return <Aviso titulo="Vales ainda não ativados" texto="O estúdio está terminando de configurar esta parte. Chame no WhatsApp que a gente resolve na hora." />;
@@ -116,131 +127,100 @@ const GiftReveal: React.FC<{ codigo: string }> = ({ codigo }) => {
     `Olá! Tenho o vale presente ${vale.codigo}, de ${emReais(presente.valor)}, e gostaria de agendar.`
   )}`;
 
-  const tremida = reduzido ? [0] : [0, -2 - toques * 2, 2 + toques * 2, -1 - toques, 0];
-  const brilho = toques / TOQUES_PARA_ABRIR;
+  const validade = new Date(vale.expira_em).toLocaleDateString('pt-BR');
 
   return (
-    <main className="relative flex min-h-[100svh] flex-col items-center justify-center overflow-hidden bg-black px-6 py-16 text-white">
+    <main className="relative flex min-h-[100svh] flex-col items-center justify-center overflow-hidden bg-black px-5 py-14 text-white">
       <div
         aria-hidden
         className="pointer-events-none absolute left-1/2 top-1/2 h-[70vmin] w-[70vmin] -translate-x-1/2 -translate-y-1/2 rounded-full bg-red-700/20 blur-[100px] transition-opacity duration-700"
-        style={{ opacity: 0.25 + brilho * 0.75 }}
+        style={{ opacity: rasgado ? 1 : 0.3 }}
       />
 
-      {/* A tinta voa por cima do fundo e por baixo do conteúdo, para o cartão
+      {/* A tinta voa por cima do fundo e por baixo do conteúdo, para o texto
           não ser encoberto no momento em que a pessoa quer lê-lo. */}
       <InkBurst ref={tinta} className="absolute inset-0 z-[5] h-full w-full" />
 
-      <AnimatePresence mode="wait">
-        {!aberto ? (
-          <motion.div
-            key="caixa"
-            exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.3 } }}
-            className="relative z-10 flex flex-col items-center"
-          >
-            <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.4em] text-white/50">
-              {presente.de ? `${presente.de} deixou algo para você` : 'Alguém deixou algo para você'}
-            </p>
-            <p className="mb-10 font-display text-3xl italic text-white sm:text-4xl">{presente.para}</p>
+      <div className="relative z-10 flex w-full max-w-3xl flex-col items-center">
+        <p className="mb-2 text-center font-mono text-[10px] uppercase tracking-[0.4em] text-white/50">
+          {presente.de ? `${presente.de} deixou algo para você` : 'Alguém deixou algo para você'}
+        </p>
+        <p className="mb-10 text-center font-display text-3xl italic text-white sm:text-4xl">
+          {presente.para}
+        </p>
 
-            <motion.button
-              type="button"
-              onClick={abrir}
-              aria-label={`Abrir o presente. Toque ${toques} de ${TOQUES_PARA_ABRIR}`}
-              animate={{ rotate: tremida }}
-              transition={{ duration: 0.4 }}
-              key={`tremida-${toques}`}
-              className="relative outline-none focus-visible:ring-2 focus-visible:ring-red-600 focus-visible:ring-offset-4 focus-visible:ring-offset-black"
+        <TicketTear
+          onRasgar={() => {
+            setRasgado(true);
+            if (!reduzido) tinta.current?.respingar(1);
+          }}
+        >
+          <TicketCampos
+            valor={presente.valor}
+            para={presente.para}
+            de={presente.de}
+            validade={validade}
+            visivel={rasgado}
+          />
+        </TicketTear>
+
+        {/*
+          O ingresso é o ritual; o texto abaixo é a informação. Num celular o
+          vale ocupa 375px de largura e a letra da arte fica pequena demais
+          para ser lida — então o que importa aparece aqui, na tipografia do
+          site, em tamanho de gente.
+        */}
+        <AnimatePresence>
+          {rasgado ? (
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={reduzido ? { duration: 0 } : { duration: 0.6, delay: 0.5 }}
+              className="mt-12 flex w-full max-w-md flex-col items-center"
             >
-              <svg width="200" height="190" viewBox="0 0 200 190" className="drop-shadow-[0_20px_60px_rgba(185,28,28,0.3)]">
-                <motion.rect
-                  x="30" y="58" width="140" height="14" rx="3"
-                  className="fill-red-500"
-                  animate={{ opacity: brilho }}
-                  transition={{ duration: 0.3 }}
-                />
-                <rect x="34" y="66" width="132" height="104" rx="6" className="fill-neutral-900 stroke-white/20" strokeWidth="2" />
-                <rect x="92" y="66" width="16" height="104" className="fill-red-700/80" />
-                <motion.g
-                  animate={{ y: reduzido ? 0 : -toques * 7, rotate: reduzido ? 0 : toques * -3 }}
-                  style={{ originX: '0.5', originY: '1' }}
-                  transition={{ type: 'spring', stiffness: 220, damping: 14 }}
-                >
-                  <rect x="26" y="40" width="148" height="26" rx="5" className="fill-neutral-800 stroke-white/25" strokeWidth="2" />
-                  <rect x="92" y="40" width="16" height="26" className="fill-red-700" />
-                  <path d="M100 40 c-16-14-34-6-30 6 M100 40 c16-14 34-6 30 6" className="fill-none stroke-red-600" strokeWidth="5" strokeLinecap="round" />
-                </motion.g>
-              </svg>
-            </motion.button>
-
-            <div className="mt-10 flex items-center gap-2" aria-hidden>
-              {Array.from({ length: TOQUES_PARA_ABRIR }).map((_, i) => (
-                <span
-                  key={i}
-                  className={`h-1.5 w-8 rounded-full transition-colors duration-300 ${
-                    i < toques ? 'bg-red-600' : 'bg-white/15'
-                  }`}
-                />
-              ))}
-            </div>
-            <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.3em] text-white/40">
-              {toques === 0 ? 'Toque para abrir' : toques < TOQUES_PARA_ABRIR ? 'Continue…' : ''}
-            </p>
-          </motion.div>
-        ) : (
-          <motion.div
-            key="revelado"
-            initial={{ opacity: 0, y: 40, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={reduzido ? { duration: 0 } : { duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-            className="relative z-10 flex w-full max-w-md flex-col items-center"
-          >
-            <p className="mb-6 text-center font-mono text-[10px] uppercase tracking-[0.4em] text-red-500">
-              Seu presente
-            </p>
-
-            <GiftCard presente={presente} codigo={vale.codigo} />
-
-            {presente.recado ? (
-              <p className="mt-8 max-w-sm text-center font-display text-lg italic leading-relaxed text-white/80">
-                “{presente.recado}”
+              <p className="font-logo text-4xl font-black tracking-tight text-red-600">
+                {emReais(presente.valor)}
               </p>
-            ) : null}
+              <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.3em] text-white/50">
+                Código {vale.codigo} · válido até {validade}
+              </p>
 
-            <a
-              href={whatsapp}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-10 w-full rounded-full bg-red-700 px-8 py-4 text-center text-[10px] font-black uppercase tracking-[0.3em] text-white transition-colors hover:bg-white hover:text-black"
-            >
-              Agendar minha sessão
-            </a>
+              {presente.recado ? (
+                <p className="mt-8 max-w-sm text-center font-display text-lg italic leading-relaxed text-white/80">
+                  “{presente.recado}”
+                </p>
+              ) : null}
 
-            <p className="mt-6 max-w-xs text-center font-mono text-[9px] uppercase leading-relaxed tracking-[0.15em] text-white/35">
-              Código {vale.codigo} · válido até{' '}
-              {new Date(vale.expira_em).toLocaleDateString('pt-BR')} · {VALIDADE_MESES} meses
-            </p>
-
-            <div className="mt-10 flex items-center gap-5">
               <a
-                href={location.pathname}
-                className="font-mono text-[10px] uppercase tracking-[0.3em] text-white/40 transition-colors hover:text-white"
-              >
-                Ver o trabalho do Bisão
-              </a>
-              <span aria-hidden className="h-3 w-px bg-white/15" />
-              <a
-                href={INSTAGRAM_LINK}
+                href={whatsapp}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-mono text-[10px] uppercase tracking-[0.3em] text-white/40 transition-colors hover:text-white"
+                className="mt-10 w-full rounded-full bg-red-700 px-8 py-4 text-center text-[10px] font-black uppercase tracking-[0.3em] text-white transition-colors hover:bg-white hover:text-black"
               >
-                @bisaoink
+                Agendar minha sessão
               </a>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+
+              <div className="mt-10 flex items-center gap-5">
+                <a
+                  href={location.pathname}
+                  className="font-mono text-[10px] uppercase tracking-[0.3em] text-white/40 transition-colors hover:text-white"
+                >
+                  Ver o trabalho do Bisão
+                </a>
+                <span aria-hidden className="h-3 w-px bg-white/15" />
+                <a
+                  href={INSTAGRAM_LINK}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-mono text-[10px] uppercase tracking-[0.3em] text-white/40 transition-colors hover:text-white"
+                >
+                  @bisaoink
+                </a>
+              </div>
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
+      </div>
     </main>
   );
 };
