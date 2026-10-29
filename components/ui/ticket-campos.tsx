@@ -17,10 +17,16 @@ interface TicketCamposProps {
  * texto acompanha o ingresso em qualquer largura, do celular ao desktop, sem
  * uma única media query.
  *
- * As posições foram medidas na arte original — a linha de "Um presente de:"
- * começa em 60% da largura, e as três linhas ficam a 72%, 80% e 87% da altura.
+ * As posições não são estimadas: varri a arte procurando as corridas de
+ * pixel vermelho e os traços de preencher saíram em 72,5%, 80,3% e 88,1% da
+ * altura, de 59,7% a 86,8% da largura.
+ *
+ * Ancorados por `bottom`, nunca por `top` + translateY. O framer anima `y`
+ * nestes mesmos elementos e escreve o próprio `transform` — um translateY
+ * escrito à mão aqui é descartado em silêncio, e era isso que fazia cada
+ * valor cair meia linha abaixo do traço em vez de pousar sobre ele.
  */
-const LINHAS = { de: 71.5, para: 79, validade: 86.5 };
+const LINHAS = { de: 72.5, para: 80.3, validade: 88.1 };
 
 export const TicketCampos: React.FC<TicketCamposProps> = ({ valor, para, de, validade, visivel }) => {
   const reduzido = useReducedMotion();
@@ -71,10 +77,10 @@ export const TicketCampos: React.FC<TicketCamposProps> = ({ valor, para, de, val
           className="absolute truncate font-display italic text-neutral-800"
           style={{
             left: '60.5%',
-            top: `${LINHAS[chave]}%`,
-            width: '27%',
+            bottom: `${100 - LINHAS[chave]}%`,
+            width: '26.5%',
             fontSize: 'clamp(8px, 2.5cqw, 26px)',
-            transform: 'translateY(-100%)',
+            lineHeight: 1.05,
           }}
         >
           {texto}
