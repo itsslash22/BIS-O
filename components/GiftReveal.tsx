@@ -1,7 +1,6 @@
 import React from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { TicketTear } from './ui/ticket-tear';
-import { TicketCampos } from './ui/ticket-campos';
 import { InkBurst, type InkBurstHandle } from './ui/ink-burst';
 import { emReais, paraReais, VALIDADE_MESES, type Presente, type Tamanho } from '../lib/gift';
 import { buscarVale, type ValePublico } from '../lib/vales';
@@ -154,15 +153,7 @@ const GiftReveal: React.FC<{ codigo: string }> = ({ codigo }) => {
             setRasgado(true);
             if (!reduzido) tinta.current?.respingar(1);
           }}
-        >
-          <TicketCampos
-            valor={presente.valor}
-            para={presente.para}
-            de={presente.de}
-            validade={validade}
-            visivel={rasgado}
-          />
-        </TicketTear>
+        />
 
         {/*
           O ingresso é o ritual; o texto abaixo é a informação. Num celular o
